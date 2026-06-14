@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
-import '../viewmodels/playlist_provider.dart';
+import '../viewmodels/playlist_viewmodel.dart';
 
-class PlaylistInputScreen extends ConsumerStatefulWidget {
-  const PlaylistInputScreen({super.key});
+class PlaylistInputView extends ConsumerStatefulWidget {
+  const PlaylistInputView({super.key});
 
   @override
-  ConsumerState<PlaylistInputScreen> createState() => _PlaylistInputScreenState();
+  ConsumerState<PlaylistInputView> createState() => _PlaylistInputViewState();
 }
 
-class _PlaylistInputScreenState extends ConsumerState<PlaylistInputScreen> {
+class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
   final _urlController = TextEditingController();
   final _fileController = TextEditingController();
   bool _hasUrl = false;

@@ -3,18 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/viewmodels/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_viewmodel.dart';
 import '../../playlist/widgets/channel_list_item.dart';
-import '../viewmodels/search_provider.dart';
+import '../viewmodels/search_viewmodel.dart';
 
-class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+class SearchView extends ConsumerStatefulWidget {
+  const SearchView({super.key});
 
   @override
-  ConsumerState<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchView> createState() => _SearchViewState();
 }
 
-class _SearchScreenState extends ConsumerState<SearchScreen> {
+class _SearchViewState extends ConsumerState<SearchView> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
 

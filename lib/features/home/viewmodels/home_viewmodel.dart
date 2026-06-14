@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/viewmodels/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_viewmodel.dart';
 
 class HomeState {
   final String selectedCategory;
@@ -24,8 +24,8 @@ class HomeState {
   }
 }
 
-class HomeNotifier extends StateNotifier<HomeState> {
-  HomeNotifier() : super(const HomeState());
+class HomeViewModel extends StateNotifier<HomeState> {
+  HomeViewModel() : super(const HomeState());
 
   void selectCategory(String category) {
     state = state.copyWith(selectedCategory: category);
@@ -36,8 +36,8 @@ class HomeNotifier extends StateNotifier<HomeState> {
   }
 }
 
-final homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
-  return HomeNotifier();
+final homeProvider = StateNotifierProvider<HomeViewModel, HomeState>((ref) {
+  return HomeViewModel();
 });
 
 final curatedCategoriesProvider = Provider<List<String>>((ref) {

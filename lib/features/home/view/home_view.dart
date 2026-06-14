@@ -5,22 +5,22 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/viewmodels/playlist_provider.dart';
-import '../../playlist/view/playlist_input_screen.dart';
-import '../../player/view/player_screen.dart';
-import '../../search/view/search_screen.dart';
-import '../viewmodels/home_provider.dart';
+import '../../playlist/viewmodels/playlist_viewmodel.dart';
+import '../../playlist/view/playlist_input_view.dart';
+import '../../player/view/player_view.dart';
+import '../../search/view/search_view.dart';
+import '../viewmodels/home_viewmodel.dart';
 import '../widgets/hero_banner.dart';
 import '../../../shared/widgets/loading_widget.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class HomeView extends ConsumerStatefulWidget {
+  const HomeView({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeViewState extends ConsumerState<HomeView> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
 
@@ -65,7 +65,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PlaylistInputScreen()),
+                    MaterialPageRoute(builder: (_) => const PlaylistInputView()),
                   ),
                   icon: const Icon(Icons.add),
                   label: const Text('Add Playlist'),
@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.search),
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                  MaterialPageRoute(builder: (_) => const SearchView()),
                 ),
               ),
               PopupMenuButton<String>(
@@ -136,7 +136,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   switch (value) {
                     case 'add_playlist':
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const PlaylistInputScreen()),
+                        MaterialPageRoute(builder: (_) => const PlaylistInputView()),
                       );
                     case 'about':
                       _showAbout(context);
@@ -249,7 +249,7 @@ class _ChannelGridCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => PlayerScreen(channel: channel),
+            builder: (_) => PlayerView(channel: channel),
           ),
         );
       },

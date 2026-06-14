@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import '../../../core/theme/app_colors.dart';
-import '../viewmodels/player_provider.dart';
+import '../viewmodels/player_viewmodel.dart';
 
 class VideoControls extends ConsumerStatefulWidget {
   const VideoControls({super.key});
@@ -38,21 +38,21 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     _hideTimer = Timer(const Duration(seconds: 4), () {
       if (mounted) {
         _animController?.reverse();
-        ref.read(playerProvider.notifier).hideControls();
+        ref.read(playerViewModelProvider.notifier).hideControls();
       }
     });
   }
 
   void _onTap() {
-    final playerState = ref.read(playerProvider);
+    final playerState = ref.read(playerViewModelProvider);
     if (playerState.hasError) return;
 
     if (!playerState.showControls) {
-      ref.read(playerProvider.notifier).showControlsTemporarily();
+      ref.read(playerViewModelProvider.notifier).showControlsTemporarily();
       _animController?.forward();
       _startHideTimer();
     } else {
-      ref.read(playerProvider.notifier).togglePlayPause();
+      ref.read(playerViewModelProvider.notifier).togglePlayPause();
     }
   }
 
@@ -65,7 +65,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
 
   @override
   Widget build(BuildContext context) {
-    final playerState = ref.watch(playerProvider);
+    final playerState = ref.watch(playerViewModelProvider);
     final controller = playerState.controller;
 
     if (controller == null || !playerState.isInitialized || playerState.hasError) {
@@ -113,7 +113,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          ref.read(playerProvider.notifier).toggleFullScreen();
+                          ref.read(playerViewModelProvider.notifier).toggleFullScreen();
                         },
                       ),
                     ],
@@ -123,7 +123,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             ),
             Center(
               child: GestureDetector(
-                onTap: () => ref.read(playerProvider.notifier).togglePlayPause(),
+                onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
                 child: AnimatedOpacity(
                   opacity: playerState.showControls ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 200),

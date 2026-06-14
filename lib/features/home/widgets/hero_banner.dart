@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../player/view/player_screen.dart';
+import '../../player/view/player_view.dart';
 
 class HeroBanner extends ConsumerWidget {
   final ChannelModel channel;
@@ -55,7 +55,7 @@ class HeroBanner extends ConsumerWidget {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => PlayerScreen(channel: channel),
+                              builder: (_) => PlayerView(channel: channel),
                             ),
                           );
                         },

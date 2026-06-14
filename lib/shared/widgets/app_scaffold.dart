@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
-import '../../features/home/view/home_screen.dart';
-import '../../features/search/view/search_screen.dart';
-import '../../features/favorites/view/favorites_screen.dart';
+import '../../features/home/view/home_view.dart';
+import '../../features/search/view/search_view.dart';
+import '../../features/favorites/view/favorites_view.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({super.key});
@@ -16,9 +16,9 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
   int _currentIndex = 0;
 
   final _screens = const [
-    HomeScreen(),
-    SearchScreen(),
-    FavoritesScreen(),
+    HomeView(),
+    SearchView(),
+    FavoritesView(),
   ];
 
   @override

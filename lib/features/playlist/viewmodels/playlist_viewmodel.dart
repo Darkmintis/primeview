@@ -7,10 +7,10 @@ import '../services/playlist_service.dart';
 
 enum PlaylistState { idle, loading, loaded, error }
 
-class PlaylistNotifier extends StateNotifier<PlaylistState> {
+class PlaylistViewModel extends StateNotifier<PlaylistState> {
   final PlaylistService _service;
 
-  PlaylistNotifier(this._service)
+  PlaylistViewModel(this._service)
       : _channels = [],
         super(PlaylistState.idle) {
     _loadCachedThenRefresh();
@@ -110,8 +110,8 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
   }
 }
 
-final playlistProvider = StateNotifierProvider<PlaylistNotifier, PlaylistState>((ref) {
-  return PlaylistNotifier(sl<PlaylistService>());
+final playlistProvider = StateNotifierProvider<PlaylistViewModel, PlaylistState>((ref) {
+  return PlaylistViewModel(sl<PlaylistService>());
 });
 
 final channelsProvider = Provider<List<ChannelModel>>((ref) {

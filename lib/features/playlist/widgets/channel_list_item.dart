@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../favorites/viewmodels/favorites_provider.dart';
-import '../../player/view/player_screen.dart';
+import '../../favorites/viewmodels/favorites_viewmodel.dart';
+import '../../player/view/player_view.dart';
 
 class ChannelListItem extends ConsumerWidget {
   final ChannelModel channel;
@@ -25,7 +25,7 @@ class ChannelListItem extends ConsumerWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => PlayerScreen(channel: channel),
+                builder: (_) => PlayerView(channel: channel),
               ),
             );
           },

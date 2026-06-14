@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/channel_model.dart';
 import '../services/search_service.dart';
-import '../../playlist/viewmodels/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_viewmodel.dart';
 
-class SearchNotifier extends StateNotifier<SearchState> {
+class SearchViewModel extends StateNotifier<SearchState> {
   final SearchService _service;
 
-  SearchNotifier(this._service) : super(SearchState());
+  SearchViewModel(this._service) : super(SearchState());
 
   void setQuery(String query) {
     state = state.copyWith(query: query);
@@ -67,8 +67,8 @@ class SearchState {
   }
 }
 
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
-  return SearchNotifier(SearchService());
+final searchProvider = StateNotifierProvider<SearchViewModel, SearchState>((ref) {
+  return SearchViewModel(SearchService());
 });
 
 final searchResultsProvider = Provider<List<ChannelModel>>((ref) {

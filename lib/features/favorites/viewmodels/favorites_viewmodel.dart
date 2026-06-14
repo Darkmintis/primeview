@@ -2,12 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/models/channel_model.dart';
 import '../services/favorites_service.dart';
-import '../../playlist/viewmodels/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_viewmodel.dart';
 
-class FavoritesNotifier extends StateNotifier<Set<String>> {
+class FavoritesViewModel extends StateNotifier<Set<String>> {
   final FavoritesService _service;
 
-  FavoritesNotifier(this._service) : super({}) {
+  FavoritesViewModel(this._service) : super({}) {
     _load();
   }
 
@@ -26,8 +26,8 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
 }
 
 final favoritesProvider =
-    StateNotifierProvider<FavoritesNotifier, Set<String>>((ref) {
-  return FavoritesNotifier(sl<FavoritesService>());
+    StateNotifierProvider<FavoritesViewModel, Set<String>>((ref) {
+  return FavoritesViewModel(sl<FavoritesService>());
 });
 
 final favoriteChannelsProvider = Provider<List<ChannelModel>>((ref) {

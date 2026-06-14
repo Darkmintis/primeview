@@ -58,8 +58,8 @@ class PlayerState {
   }
 }
 
-class PlayerProvider extends StateNotifier<PlayerState> {
-  PlayerProvider() : super(const PlayerState());
+class PlayerViewModel extends StateNotifier<PlayerState> {
+  PlayerViewModel() : super(const PlayerState());
 
   Future<void> initialize(String url) async {
     state = state.copyWith(isLoading: true, hasError: false, errorMessage: null);
@@ -182,8 +182,8 @@ class PlayerProvider extends StateNotifier<PlayerState> {
   }
 }
 
-final playerProvider = StateNotifierProvider.autoDispose<PlayerProvider, PlayerState>((ref) {
-  return PlayerProvider();
+final playerViewModelProvider = StateNotifierProvider.autoDispose<PlayerViewModel, PlayerState>((ref) {
+  return PlayerViewModel();
 });
 
 int min(int a, int b) => a < b ? a : b;

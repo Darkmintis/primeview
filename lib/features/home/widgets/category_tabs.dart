@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
-import '../viewmodels/home_provider.dart';
+import '../viewmodels/home_viewmodel.dart';
 
 class CategoryTabs extends ConsumerWidget {
   const CategoryTabs({super.key});

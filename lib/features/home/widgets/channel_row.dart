@@ -4,7 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../player/view/player_screen.dart';
+import '../../player/view/player_view.dart';
 
 class ChannelRow extends StatelessWidget {
   final String title;
@@ -62,7 +62,7 @@ class _ChannelCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => PlayerScreen(channel: channel),
+            builder: (_) => PlayerView(channel: channel),
           ),
         );
       },

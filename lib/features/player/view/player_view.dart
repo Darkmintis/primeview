@@ -5,19 +5,19 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter/services.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
-import '../viewmodels/player_provider.dart';
+import '../viewmodels/player_viewmodel.dart';
 import '../widgets/video_controls.dart';
 
-class PlayerScreen extends ConsumerStatefulWidget {
+class PlayerView extends ConsumerStatefulWidget {
   final ChannelModel channel;
 
-  const PlayerScreen({super.key, required this.channel});
+  const PlayerView({super.key, required this.channel});
 
   @override
-  ConsumerState<PlayerScreen> createState() => _PlayerScreenState();
+  ConsumerState<PlayerView> createState() => _PlayerViewState();
 }
 
-class _PlayerScreenState extends ConsumerState<PlayerScreen>
+class _PlayerViewState extends ConsumerState<PlayerView>
     with WidgetsBindingObserver {
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
     WakelockPlus.enable();
     _setLandscapePreferred();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(playerProvider.notifier).initialize(widget.channel.url);
+      ref.read(playerViewModelProvider.notifier).initialize(widget.channel.url);
     });
   }
 
@@ -59,15 +59,15 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      ref.read(playerProvider.notifier).pause();
+      ref.read(playerViewModelProvider.notifier).pause();
     } else if (state == AppLifecycleState.resumed) {
-      ref.read(playerProvider.notifier).play();
+      ref.read(playerViewModelProvider.notifier).play();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final playerState = ref.watch(playerProvider);
+    final playerState = ref.watch(playerViewModelProvider);
 
     if (playerState.isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -205,7 +205,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
               children: [
                 ElevatedButton.icon(
                   onPressed: () => ref
-                      .read(playerProvider.notifier)
+                      .read(playerViewModelProvider.notifier)
                       .retry(widget.channel.url),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Retry'),
