@@ -55,6 +55,9 @@ class _ChannelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasCountry = channel.country != null && channel.country!.isNotEmpty;
+    final hasLanguage = channel.language != null && channel.language!.isNotEmpty;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -64,11 +67,11 @@ class _ChannelCard extends StatelessWidget {
         );
       },
       child: Container(
-        width: 140,
+        width: 150,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,40 +79,68 @@ class _ChannelCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(8),
+                  top: Radius.circular(10),
                 ),
-                child: Container(
-                  width: double.infinity,
-                  color: AppColors.surfaceLight,
-                  child: channel.logo != null && channel.logo!.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: channel.logo!,
-                          fit: BoxFit.contain,
-                          placeholder: (_, _) => const Center(
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primary,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      color: AppColors.surfaceLight,
+                      child: channel.logo != null && channel.logo!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: channel.logo!,
+                              fit: BoxFit.contain,
+                              placeholder: (_, _) => const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (_, _, _) => const Center(
+                                child: Icon(
+                                  Icons.tv,
+                                  color: AppColors.textMuted,
+                                  size: 40,
+                                ),
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.tv,
+                                color: AppColors.textMuted,
+                                size: 40,
                               ),
                             ),
+                    ),
+                    if (hasCountry)
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
                           ),
-                          errorWidget: (_, _, _) => const Center(
-                            child: Icon(
-                              Icons.tv,
-                              color: AppColors.textMuted,
-                              size: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            channel.country!.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.tv,
-                            color: AppColors.textMuted,
-                            size: 40,
-                          ),
                         ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -129,14 +160,38 @@ class _ChannelCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    htmlDecode(channel.category ?? ''),
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 10,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          htmlDecode(channel.category ?? ''),
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 10,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (hasLanguage)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            channel.language!,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 8,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
