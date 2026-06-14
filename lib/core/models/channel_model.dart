@@ -7,6 +7,7 @@ class ChannelModel extends Equatable {
   final String? logo;
   final String? category;
   final String? language;
+  final String? country;
   final String? group;
   final bool isActive;
 
@@ -17,6 +18,7 @@ class ChannelModel extends Equatable {
     this.logo,
     this.category,
     this.language,
+    this.country,
     this.group,
     this.isActive = true,
   });
@@ -28,6 +30,7 @@ class ChannelModel extends Equatable {
     String? logo,
     String? category,
     String? language,
+    String? country,
     String? group,
     bool? isActive,
   }) {
@@ -38,11 +41,12 @@ class ChannelModel extends Equatable {
       logo: logo ?? this.logo,
       category: category ?? this.category,
       language: language ?? this.language,
+      country: country ?? this.country,
       group: group ?? this.group,
       isActive: isActive ?? this.isActive,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, url, logo, category, language, group, isActive];
+  List<Object?> get props => [id, name, url, logo, category, language, country, group, isActive];
 }
