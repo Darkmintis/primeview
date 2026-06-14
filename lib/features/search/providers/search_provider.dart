@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/channel_model.dart';
-import '../../../core/utils/html_utils.dart';
+import '../services/search_service.dart';
 import '../../playlist/providers/playlist_provider.dart';
 
 class SearchNotifier extends StateNotifier<SearchState> {
-  SearchNotifier() : super(SearchState());
+  final SearchService _service;
+
+  SearchNotifier(this._service) : super(SearchState());
 
   void setQuery(String query) {
     state = state.copyWith(query: query);
@@ -27,36 +29,13 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 
   List<ChannelModel> filterChannels(List<ChannelModel> allChannels) {
-    var filtered = allChannels;
-
-    if (state.query.isNotEmpty) {
-      final query = state.query.toLowerCase();
-      filtered = filtered.where((c) {
-        return c.name.toLowerCase().contains(query) ||
-            (c.category?.toLowerCase().contains(query) ?? false) ||
-            (c.country?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    }
-
-    if (state.selectedCategory != null && state.selectedCategory!.isNotEmpty) {
-      filtered = filtered
-          .where((c) => htmlDecode(c.category ?? '') == state.selectedCategory)
-          .toList();
-    }
-
-    if (state.selectedLanguage != null && state.selectedLanguage!.isNotEmpty) {
-      filtered = filtered
-          .where((c) => c.language == state.selectedLanguage)
-          .toList();
-    }
-
-    if (state.selectedCountry != null && state.selectedCountry!.isNotEmpty) {
-      filtered = filtered
-          .where((c) => c.country == state.selectedCountry)
-          .toList();
-    }
-
-    return filtered;
+    return _service.filter(
+      channels: allChannels,
+      query: state.query,
+      category: state.selectedCategory,
+      language: state.selectedLanguage,
+      country: state.selectedCountry,
+    );
   }
 }
 
@@ -89,7 +68,7 @@ class SearchState {
 }
 
 final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
-  return SearchNotifier();
+  return SearchNotifier(SearchService());
 });
 
 final searchResultsProvider = Provider<List<ChannelModel>>((ref) {
