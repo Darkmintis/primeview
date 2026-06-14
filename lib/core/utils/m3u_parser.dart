@@ -18,6 +18,7 @@ class M3uParser {
       String? currentLogo;
       String? currentCategory;
       String? currentLanguage;
+      String? currentCountry;
       String? currentGroup;
 
       for (int i = 0; i < lines.length; i++) {
@@ -29,6 +30,7 @@ class M3uParser {
           currentLogo = metadata['logo'];
           currentCategory = metadata['category'];
           currentLanguage = metadata['language'];
+          currentCountry = metadata['country'];
           currentGroup = metadata['group'];
         } else if (line.startsWith('http://') || line.startsWith('https://') || line.startsWith('rtmp://') || line.startsWith('rtsp://')) {
           final url = line.trim();
@@ -51,6 +53,7 @@ class M3uParser {
             logo: currentLogo,
             category: currentCategory ?? 'Uncategorized',
             language: currentLanguage,
+            country: currentCountry,
             group: currentGroup,
             isActive: true,
           ));
@@ -59,6 +62,7 @@ class M3uParser {
           currentLogo = null;
           currentCategory = null;
           currentLanguage = null;
+          currentCountry = null;
           currentGroup = null;
         }
       }
@@ -76,6 +80,7 @@ class M3uParser {
     String? logo;
     String? category;
     String? language;
+    String? country;
     String? group;
 
     final logoMatch = RegExp(r'tvg-logo="([^"]*)"').firstMatch(line);
@@ -94,6 +99,11 @@ class M3uParser {
       language = htmlDecode(languageMatch.group(1)!);
     }
 
+    final countryMatch = RegExp(r'tvg-country="([^"]*)"').firstMatch(line);
+    if (countryMatch != null) {
+      country = htmlDecode(countryMatch.group(1)!);
+    }
+
     final commaIndex = line.lastIndexOf(',');
     if (commaIndex > 0 && commaIndex < line.length - 1) {
       name = htmlDecode(line.substring(commaIndex + 1).trim());
@@ -104,6 +114,7 @@ class M3uParser {
       'logo': logo,
       'category': category,
       'language': language,
+      'country': country,
       'group': group,
     };
   }
