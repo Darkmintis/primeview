@@ -1,17 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/injection_container.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/logger.dart';
 import '../../../core/utils/html_utils.dart';
-import '../repositories/playlist_repository.dart';
+import '../services/playlist_service.dart';
 
 enum PlaylistState { idle, loading, loaded, error }
 
 class PlaylistNotifier extends StateNotifier<PlaylistState> {
-  final PlaylistRepository _repository;
+  final PlaylistService _service;
 
-  PlaylistNotifier(this._repository)
+  PlaylistNotifier(this._service)
       : _channels = [],
         super(PlaylistState.idle) {
     _loadCachedThenRefresh();
@@ -24,7 +23,7 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
   String? get errorMessage => _errorMessage;
 
   Future<void> _loadCachedThenRefresh() async {
-    final cached = _repository.getCachedPlaylist();
+    final cached = _service.loadFromCache();
     if (cached != null && cached.isNotEmpty) {
       _channels = cached;
       state = PlaylistState.loaded;
@@ -33,7 +32,7 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
       state = PlaylistState.loading;
     }
 
-    _fetchFromIptvOrg().then((onlineChannels) {
+    _service.fetchFromIptvOrg().then((onlineChannels) {
       if (onlineChannels.isNotEmpty) {
         _channels = onlineChannels;
         state = PlaylistState.loaded;
@@ -48,32 +47,6 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
         AppLogger.warning('Background refresh failed, using cached channels', error: e);
       }
     });
-  }
-
-  Future<List<ChannelModel>> _fetchFromIptvOrg() async {
-    try {
-      return await _repository.fetchAndParsePlaylist(AppConstants.defaultPlaylistUrl);
-    } catch (e) {
-      AppLogger.warning('Full playlist fetch failed, trying category playlists', error: e);
-    }
-
-    try {
-      final allChannels = <ChannelModel>[];
-      for (final url in AppConstants.categoryPlaylists) {
-        try {
-          final channels = await _repository.fetchAndParsePlaylist(url, isCategoryPlaylist: true);
-          allChannels.addAll(channels);
-        } catch (_) {}
-      }
-      if (allChannels.isNotEmpty) {
-        await _repository.cachePlaylist(allChannels);
-        return allChannels;
-      }
-    } catch (e) {
-      AppLogger.error('All playlist fetches failed', error: e);
-    }
-
-    return [];
   }
 
   List<String> get categories {
@@ -110,7 +83,7 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
     _errorMessage = null;
 
     try {
-      _channels = await _repository.fetchAndParsePlaylist(url);
+      _channels = await _service.loadFromUrl(url);
       state = PlaylistState.loaded;
       AppLogger.info('Loaded ${_channels.length} channels from URL');
     } catch (e) {
@@ -126,7 +99,7 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
     _errorMessage = null;
 
     try {
-      _channels = await _repository.loadPlaylistFromFile(content);
+      _channels = await _service.loadFromFile(content);
       state = PlaylistState.loaded;
       AppLogger.info('Loaded ${_channels.length} channels from file');
     } catch (e) {
@@ -138,7 +111,7 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
 }
 
 final playlistProvider = StateNotifierProvider<PlaylistNotifier, PlaylistState>((ref) {
-  return PlaylistNotifier(sl<PlaylistRepository>());
+  return PlaylistNotifier(sl<PlaylistService>());
 });
 
 final channelsProvider = Provider<List<ChannelModel>>((ref) {
