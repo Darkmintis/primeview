@@ -73,15 +73,16 @@ class PlayerProvider extends StateNotifier<PlayerState> {
 
       await controller.initialize();
       controller.addListener(_onControllerUpdate);
+      controller.play();
 
       state = state.copyWith(
         isInitialized: true,
-        isPlaying: false,
+        isPlaying: true,
         isLoading: false,
         duration: controller.value.duration,
       );
 
-      AppLogger.info('Player initialized successfully: ${url.substring(0, min(80, url.length))}...');
+      AppLogger.info('Player initialized and playing: ${url.substring(0, min(80, url.length))}...');
     } catch (e) {
       AppLogger.error('Failed to initialize player for URL', error: e);
       state = state.copyWith(
