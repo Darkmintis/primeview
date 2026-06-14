@@ -92,6 +92,16 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
     return langs;
   }
 
+  List<String> get countries {
+    final cntrs = _channels
+        .where((c) => c.country != null && c.country!.isNotEmpty)
+        .map((c) => htmlDecode(c.country!))
+        .toSet()
+        .toList();
+    cntrs.sort();
+    return cntrs;
+  }
+
   int get channelCount => _channels.length;
 
   Future<void> loadFromUrl(String url) async {
@@ -144,4 +154,9 @@ final categoriesProvider = Provider<List<String>>((ref) {
 final languagesProvider = Provider<List<String>>((ref) {
   ref.watch(playlistProvider);
   return ref.watch(playlistProvider.notifier).languages;
+});
+
+final countriesProvider = Provider<List<String>>((ref) {
+  ref.watch(playlistProvider);
+  return ref.watch(playlistProvider.notifier).countries;
 });
