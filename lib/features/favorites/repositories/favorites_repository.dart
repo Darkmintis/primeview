@@ -5,7 +5,7 @@ import '../../../core/utils/logger.dart';
 class FavoritesRepository {
   FavoritesRepository();
 
-  Set<String> getFavorites() {
+  Set<String> getAll() {
     try {
       final box = Hive.box(AppConstants.hiveBoxName);
       final list = box.get(AppConstants.hiveFavoritesKey, defaultValue: <String>[]) as List;
@@ -16,10 +16,10 @@ class FavoritesRepository {
     }
   }
 
-  Future<void> addFavorite(String channelId) async {
+  Future<void> add(String channelId) async {
     try {
       final box = Hive.box(AppConstants.hiveBoxName);
-      final favorites = getFavorites();
+      final favorites = getAll();
       favorites.add(channelId);
       await box.put(AppConstants.hiveFavoritesKey, favorites.toList());
     } catch (e) {
@@ -28,10 +28,10 @@ class FavoritesRepository {
     }
   }
 
-  Future<void> removeFavorite(String channelId) async {
+  Future<void> remove(String channelId) async {
     try {
       final box = Hive.box(AppConstants.hiveBoxName);
-      final favorites = getFavorites();
+      final favorites = getAll();
       favorites.remove(channelId);
       await box.put(AppConstants.hiveFavoritesKey, favorites.toList());
     } catch (e) {
@@ -40,15 +40,7 @@ class FavoritesRepository {
     }
   }
 
-  bool isFavorite(String channelId) {
-    return getFavorites().contains(channelId);
-  }
-
-  Future<void> toggleFavorite(String channelId) async {
-    if (isFavorite(channelId)) {
-      await removeFavorite(channelId);
-    } else {
-      await addFavorite(channelId);
-    }
+  bool exists(String channelId) {
+    return getAll().contains(channelId);
   }
 }

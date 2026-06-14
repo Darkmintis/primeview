@@ -1,39 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/models/channel_model.dart';
-import '../../../core/utils/logger.dart';
-import '../repositories/favorites_repository.dart';
+import '../services/favorites_service.dart';
 import '../../playlist/providers/playlist_provider.dart';
 
 class FavoritesNotifier extends StateNotifier<Set<String>> {
-  final FavoritesRepository _repository;
+  final FavoritesService _service;
 
-  FavoritesNotifier(this._repository) : super({}) {
+  FavoritesNotifier(this._service) : super({}) {
     _load();
   }
 
   void _load() {
-    state = _repository.getFavorites();
+    state = _service.getFavorites();
   }
 
   Future<void> toggle(String channelId) async {
-    try {
-      await _repository.toggleFavorite(channelId);
-      state = _repository.getFavorites();
-      AppLogger.debug('Toggled favorite: $channelId');
-    } catch (e) {
-      AppLogger.error('Failed to toggle favorite', error: e);
-    }
+    await _service.toggle(channelId);
+    state = _service.getFavorites();
   }
 
   bool isFavorite(String channelId) {
-    return state.contains(channelId);
+    return _service.isFavorite(channelId);
   }
 }
 
 final favoritesProvider =
     StateNotifierProvider<FavoritesNotifier, Set<String>>((ref) {
-  return FavoritesNotifier(sl<FavoritesRepository>());
+  return FavoritesNotifier(sl<FavoritesService>());
 });
 
 final favoriteChannelsProvider = Provider<List<ChannelModel>>((ref) {
