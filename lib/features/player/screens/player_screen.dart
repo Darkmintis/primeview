@@ -25,11 +25,9 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
     WidgetsBinding.instance.addObserver(this);
     WakelockPlus.enable();
     _setLandscapePreferred();
-    _initPlayer();
-  }
-
-  Future<void> _initPlayer() async {
-    await ref.read(playerProvider.notifier).initialize(widget.channel.url);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(playerProvider.notifier).initialize(widget.channel.url);
+    });
   }
 
   void _setLandscapePreferred() {
@@ -49,10 +47,12 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
     super.dispose();
   }
 
@@ -95,12 +95,34 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
     }
 
     if (playerState.isInitialized && playerState.controller != null) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          VideoPlayer(playerState.controller!),
-          const VideoControls(),
-        ],
+      final controller = playerState.controller!;
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final isLandscape = constraints.maxWidth > constraints.maxHeight;
+          return Stack(
+            children: [
+              if (isLandscape)
+                Positioned.fill(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: controller.value.size.width,
+                      height: controller.value.size.height,
+                      child: VideoPlayer(controller),
+                    ),
+                  ),
+                )
+              else
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
+                ),
+              const VideoControls(),
+            ],
+          );
+        },
       );
     }
 
@@ -123,7 +145,11 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
           const SizedBox(height: 24),
           Text(
             widget.channel.name,
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -142,17 +168,28 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_amber_rounded, size: 72, color: AppColors.warning),
+            const Icon(
+              Icons.warning_amber_rounded,
+              size: 72,
+              color: AppColors.warning,
+            ),
             const SizedBox(height: 24),
             const Text(
               'Unable to play stream',
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
               playerState.errorMessage ?? 'The stream could not be loaded.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -167,13 +204,18 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () => ref.read(playerProvider.notifier).retry(widget.channel.url),
+                  onPressed: () => ref
+                      .read(playerProvider.notifier)
+                      .retry(widget.channel.url),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Retry'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -184,7 +226,10 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: AppColors.textMuted),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
