@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/channel_model.dart';
 import '../services/search_service.dart';
-import '../../playlist/providers/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_provider.dart';
 
 class SearchNotifier extends StateNotifier<SearchState> {
   final SearchService _service;

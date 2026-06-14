@@ -5,11 +5,11 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/providers/playlist_provider.dart';
-import '../../playlist/screens/playlist_input_screen.dart';
-import '../../player/screens/player_screen.dart';
-import '../../search/screens/search_screen.dart';
-import '../providers/home_provider.dart';
+import '../../playlist/viewmodels/playlist_provider.dart';
+import '../../playlist/view/playlist_input_screen.dart';
+import '../../player/view/player_screen.dart';
+import '../../search/view/search_screen.dart';
+import '../viewmodels/home_provider.dart';
 import '../widgets/hero_banner.dart';
 import '../../../shared/widgets/loading_widget.dart';
 

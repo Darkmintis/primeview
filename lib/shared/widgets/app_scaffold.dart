@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
-import '../../features/home/screens/home_screen.dart';
-import '../../features/search/screens/search_screen.dart';
-import '../../features/favorites/screens/favorites_screen.dart';
+import '../../features/home/view/home_screen.dart';
+import '../../features/search/view/search_screen.dart';
+import '../../features/favorites/view/favorites_screen.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({super.key});

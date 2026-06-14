@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/providers/playlist_provider.dart';
+import '../../playlist/viewmodels/playlist_provider.dart';
 
 class HomeState {
   final String selectedCategory;

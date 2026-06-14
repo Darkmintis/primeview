@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import '../../../core/theme/app_colors.dart';
-import '../providers/player_provider.dart';
+import '../viewmodels/player_provider.dart';
 
 class VideoControls extends ConsumerStatefulWidget {
   const VideoControls({super.key});

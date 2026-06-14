@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
-import '../providers/playlist_provider.dart';
+import '../viewmodels/playlist_provider.dart';
 
 class PlaylistInputScreen extends ConsumerStatefulWidget {
   const PlaylistInputScreen({super.key});

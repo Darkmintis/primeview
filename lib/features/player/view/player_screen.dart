@@ -5,7 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter/services.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
-import '../providers/player_provider.dart';
+import '../viewmodels/player_provider.dart';
 import '../widgets/video_controls.dart';
 
 class PlayerScreen extends ConsumerStatefulWidget {
