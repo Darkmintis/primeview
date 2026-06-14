@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
-import '../../playlist/providers/playlist_provider.dart';
 import '../providers/home_provider.dart';
 
 class CategoryTabs extends ConsumerWidget {
@@ -11,10 +10,10 @@ class CategoryTabs extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categories = ref.watch(categoriesProvider);
+    final curatedCategories = ref.watch(curatedCategoriesProvider);
     final homeState = ref.watch(homeProvider);
 
-    final allCategories = [AppConstants.categoryAll, ...categories];
+    final allCategories = [AppConstants.categoryAll, ...curatedCategories];
 
     return SizedBox(
       height: 44,
@@ -34,7 +33,10 @@ class CategoryTabs extends ConsumerWidget {
               },
               child: AnimatedContainer(
                 duration: AppConstants.animationDuration,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
@@ -49,9 +51,13 @@ class CategoryTabs extends ConsumerWidget {
                   child: Text(
                     htmlDecode(category),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textSecondary,
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                 ),
