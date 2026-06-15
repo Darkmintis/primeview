@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/models/channel_model.dart';
@@ -8,13 +9,14 @@ import '../../../core/utils/html_utils.dart';
 import '../../playlist/viewmodels/playlist_viewmodel.dart';
 import '../../playlist/view/playlist_input_view.dart';
 import '../../player/view/player_view.dart';
-import '../../search/view/search_view.dart';
 import '../viewmodels/home_viewmodel.dart';
 import '../widgets/hero_banner.dart';
 import '../../../shared/widgets/loading_widget.dart';
 
 class HomeView extends ConsumerStatefulWidget {
-  const HomeView({super.key});
+  final VoidCallback? onSearchTap;
+
+  const HomeView({super.key, this.onSearchTap});
 
   @override
   ConsumerState<HomeView> createState() => _HomeViewState();
@@ -54,24 +56,37 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 const SizedBox(height: 16),
                 const Text(
                   'No channels available',
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  ref.read(playlistProvider.notifier).errorMessage ?? 'Failed to load channels.',
+                  ref.read(playlistProvider.notifier).errorMessage ??
+                      'Failed to load channels.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PlaylistInputView()),
+                    MaterialPageRoute(
+                      builder: (_) => const PlaylistInputView(),
+                    ),
                   ),
                   icon: const Icon(Icons.add),
                   label: const Text('Add Playlist'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -113,22 +128,19 @@ class _HomeViewState extends ConsumerState<HomeView> {
               'assets/primeview_logo.png',
               height: 28,
               color: AppColors.primary,
-              errorBuilder: (_, _, _) => const Text(
+              errorBuilder: (_, _, _) => Text(
                 'PrimeView',
-                style: TextStyle(
+                style: GoogleFonts.rubikDirt(
                   color: AppColors.primary,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
+                  fontSize: 26,
+                  letterSpacing: 1,
                 ),
               ),
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.search),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SearchView()),
-                ),
+                onPressed: () => widget.onSearchTap?.call(),
               ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
@@ -136,7 +148,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   switch (value) {
                     case 'add_playlist':
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const PlaylistInputView()),
+                        MaterialPageRoute(
+                          builder: (_) => const PlaylistInputView(),
+                        ),
                       );
                     case 'about':
                       _showAbout(context);
@@ -147,7 +161,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     value: 'add_playlist',
                     child: Row(
                       children: [
-                        Icon(Icons.add_circle_outline, color: AppColors.textPrimary),
+                        Icon(
+                          Icons.add_circle_outline,
+                          color: AppColors.textPrimary,
+                        ),
                         SizedBox(width: 12),
                         Text('Add Playlist'),
                       ],
@@ -172,17 +189,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'All Channels',
-                    style: TextStyle(
+                    style: GoogleFonts.playfairDisplay(
                       color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
                       borderRadius: BorderRadius.circular(12),
@@ -215,9 +235,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               },
             ),
           ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
@@ -228,9 +246,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       context: context,
       applicationName: AppConstants.appName,
       applicationVersion: AppConstants.appVersion,
-      children: [
-        const Text('A streaming application for IPTV playlists.'),
-      ],
+      children: [const Text('A streaming application for IPTV playlists.')],
     );
   }
 }
@@ -243,15 +259,14 @@ class _ChannelGridCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCountry = channel.country != null && channel.country!.isNotEmpty;
-    final hasLanguage = channel.language != null && channel.language!.isNotEmpty;
+    final hasLanguage =
+        channel.language != null && channel.language!.isNotEmpty;
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => PlayerView(channel: channel),
-          ),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => PlayerView(channel: channel)));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -263,7 +278,9 @@ class _ChannelGridCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(10),
+                ),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -275,25 +292,39 @@ class _ChannelGridCard extends StatelessWidget {
                               fit: BoxFit.contain,
                               placeholder: (_, _) => const Center(
                                 child: SizedBox(
-                                  width: 20, height: 20,
+                                  width: 20,
+                                  height: 20,
                                   child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: AppColors.primary,
+                                    strokeWidth: 2,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ),
                               errorWidget: (_, _, _) => const Center(
-                                child: Icon(Icons.tv, color: AppColors.textMuted, size: 32),
+                                child: Icon(
+                                  Icons.tv,
+                                  color: AppColors.textMuted,
+                                  size: 32,
+                                ),
                               ),
                             )
                           : const Center(
-                              child: Icon(Icons.tv, color: AppColors.textMuted, size: 32),
+                              child: Icon(
+                                Icons.tv,
+                                color: AppColors.textMuted,
+                                size: 32,
+                              ),
                             ),
                     ),
                     if (hasCountry)
                       Positioned(
-                        top: 4, right: 4,
+                        top: 4,
+                        right: 4,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black54,
                             borderRadius: BorderRadius.circular(4),
@@ -301,8 +332,10 @@ class _ChannelGridCard extends StatelessWidget {
                           child: Text(
                             channel.country!.toUpperCase(),
                             style: const TextStyle(
-                              color: Colors.white, fontSize: 8,
-                              fontWeight: FontWeight.w600, letterSpacing: 0.5,
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ),
@@ -319,7 +352,8 @@ class _ChannelGridCard extends StatelessWidget {
                   Text(
                     htmlDecode(channel.name),
                     style: const TextStyle(
-                      color: Colors.white, fontSize: 11,
+                      color: Colors.white,
+                      fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
@@ -332,7 +366,8 @@ class _ChannelGridCard extends StatelessWidget {
                         child: Text(
                           htmlDecode(channel.category ?? ''),
                           style: const TextStyle(
-                            color: AppColors.textMuted, fontSize: 9,
+                            color: AppColors.textMuted,
+                            fontSize: 9,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -340,7 +375,10 @@ class _ChannelGridCard extends StatelessWidget {
                       ),
                       if (hasLanguage)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 3,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.surfaceLight,
                             borderRadius: BorderRadius.circular(3),
@@ -348,7 +386,8 @@ class _ChannelGridCard extends StatelessWidget {
                           child: Text(
                             channel.language!,
                             style: const TextStyle(
-                              color: AppColors.textSecondary, fontSize: 7,
+                              color: AppColors.textSecondary,
+                              fontSize: 7,
                             ),
                           ),
                         ),

@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/navigation_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../features/home/view/home_view.dart';
 import '../../features/search/view/search_view.dart';
 import '../../features/favorites/view/favorites_view.dart';
 
-class AppScaffold extends ConsumerStatefulWidget {
+class AppScaffold extends ConsumerWidget {
   const AppScaffold({super.key});
 
   @override
-  ConsumerState<AppScaffold> createState() => _AppScaffoldState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(currentTabProvider);
 
-class _AppScaffoldState extends ConsumerState<AppScaffold> {
-  int _currentIndex = 0;
+    final screens = [
+      HomeView(onSearchTap: () => ref.read(currentTabProvider.notifier).state = 1),
+      const SearchView(),
+      const FavoritesView(),
+    ];
 
-  final _screens = const [
-    HomeView(),
-    SearchView(),
-    FavoritesView(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+        index: currentIndex,
+        children: screens,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -35,8 +31,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
           ),
         ),
         child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
+          currentIndex: currentIndex,
+          onTap: (index) => ref.read(currentTabProvider.notifier).state = index,
           backgroundColor: AppColors.surface,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textMuted,
