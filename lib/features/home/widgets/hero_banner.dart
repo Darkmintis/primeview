@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
@@ -29,28 +30,45 @@ class HeroBanner extends ConsumerWidget {
             left: 0,
             right: 0,
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildCategoryTag(),
-                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildCategoryBadge(),
+                      if (channel.country != null &&
+                          channel.country!.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        _buildInfoBadge(
+                          channel.country!.toUpperCase(),
+                        ),
+                      ],
+                      if (channel.language != null &&
+                          channel.language!.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        _buildInfoBadge(channel.language!),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 12),
                   Text(
                     channel.name,
-                    style: const TextStyle(
+                    style: GoogleFonts.playfairDisplay(
                       color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      height: 1.1,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
                       _buildActionButton(
                         label: 'Play',
-                        icon: Icons.play_arrow,
+                        icon: Icons.play_arrow_rounded,
                         isPrimary: true,
                         onTap: () {
                           Navigator.of(context).push(
@@ -63,7 +81,7 @@ class HeroBanner extends ConsumerWidget {
                       const SizedBox(width: 12),
                       _buildActionButton(
                         label: 'Info',
-                        icon: Icons.info_outline,
+                        icon: Icons.info_outline_rounded,
                         isPrimary: false,
                         onTap: () => _showInfo(context),
                       ),
@@ -105,7 +123,7 @@ class HeroBanner extends ConsumerWidget {
       ),
       child: Center(
         child: Icon(
-          Icons.live_tv,
+          Icons.live_tv_rounded,
           size: 80,
           color: AppColors.textMuted.withValues(alpha: 0.3),
         ),
@@ -113,9 +131,9 @@ class HeroBanner extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryTag() {
+  Widget _buildCategoryBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(4),
@@ -124,8 +142,27 @@ class HeroBanner extends ConsumerWidget {
         channel.category ?? 'Channel',
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBadge(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -140,10 +177,12 @@ class HeroBanner extends ConsumerWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         decoration: BoxDecoration(
-          color: isPrimary ? Colors.white : Colors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(4),
+          color: isPrimary
+              ? Colors.white
+              : Colors.white.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -151,7 +190,7 @@ class HeroBanner extends ConsumerWidget {
             Icon(
               icon,
               color: isPrimary ? Colors.black : Colors.white,
-              size: 20,
+              size: 22,
             ),
             const SizedBox(width: 8),
             Text(
