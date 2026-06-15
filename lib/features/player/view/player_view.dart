@@ -19,14 +19,17 @@ class PlayerView extends ConsumerStatefulWidget {
 
 class _PlayerViewState extends ConsumerState<PlayerView>
     with WidgetsBindingObserver {
+  ChannelModel? _currentChannel;
+
   @override
   void initState() {
     super.initState();
+    _currentChannel = widget.channel;
     WidgetsBinding.instance.addObserver(this);
     WakelockPlus.enable();
     _setLandscapePreferred();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(playerViewModelProvider.notifier).initialize(widget.channel.url);
+      ref.read(playerViewModelProvider.notifier).initialize(_currentChannel!.url);
     });
   }
 
@@ -65,9 +68,15 @@ class _PlayerViewState extends ConsumerState<PlayerView>
     }
   }
 
+  void _switchChannel(ChannelModel channel) {
+    setState(() => _currentChannel = channel);
+    ref.read(playerViewModelProvider.notifier).switchChannel(channel.url);
+  }
+
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerViewModelProvider);
+    final channel = _currentChannel!;
 
     if (playerState.isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -80,18 +89,18 @@ class _PlayerViewState extends ConsumerState<PlayerView>
       body: SafeArea(
         top: !playerState.isFullScreen,
         bottom: !playerState.isFullScreen,
-        child: _buildContent(playerState),
+        child: _buildContent(playerState, channel),
       ),
     );
   }
 
-  Widget _buildContent(PlayerState playerState) {
+  Widget _buildContent(PlayerState playerState, ChannelModel channel) {
     if (playerState.hasError) {
-      return _buildErrorView(playerState);
+      return _buildErrorView(playerState, channel);
     }
 
     if (playerState.isLoading && !playerState.isInitialized) {
-      return _buildLoadingView();
+      return _buildLoadingView(channel);
     }
 
     if (playerState.isInitialized && playerState.controller != null) {
@@ -104,7 +113,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
               if (isLandscape)
                 Positioned.fill(
                   child: FittedBox(
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     child: SizedBox(
                       width: controller.value.size.width,
                       height: controller.value.size.height,
@@ -113,23 +122,25 @@ class _PlayerViewState extends ConsumerState<PlayerView>
                   ),
                 )
               else
-                Center(
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
+                AspectRatio(
+                  aspectRatio: controller.value.aspectRatio,
+                  child: VideoPlayer(controller),
                 ),
-              const VideoControls(),
+              VideoControls(
+                channelName: channel.name,
+                currentChannel: channel,
+                onChannelChanged: _switchChannel,
+              ),
             ],
           );
         },
       );
     }
 
-    return _buildLoadingView();
+    return _buildLoadingView(channel);
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingView(ChannelModel channel) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -144,7 +155,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
           ),
           const SizedBox(height: 24),
           Text(
-            widget.channel.name,
+            channel.name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -161,7 +172,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
     );
   }
 
-  Widget _buildErrorView(PlayerState playerState) {
+  Widget _buildErrorView(PlayerState playerState, ChannelModel channel) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -193,7 +204,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
             ),
             const SizedBox(height: 8),
             Text(
-              widget.channel.url,
+              channel.url,
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
               maxLines: 2,
@@ -204,9 +215,8 @@ class _PlayerViewState extends ConsumerState<PlayerView>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () => ref
-                      .read(playerViewModelProvider.notifier)
-                      .retry(widget.channel.url),
+                  onPressed: () =>
+                      ref.read(playerViewModelProvider.notifier).retry(channel.url),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Retry'),
                   style: ElevatedButton.styleFrom(

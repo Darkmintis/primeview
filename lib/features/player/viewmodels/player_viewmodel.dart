@@ -10,6 +10,9 @@ class PlayerState {
   final Duration position;
   final Duration duration;
   final double volume;
+  final bool isMuted;
+  final double brightness;
+  final double playbackSpeed;
   final bool showControls;
   final bool hasError;
   final String? errorMessage;
@@ -23,6 +26,9 @@ class PlayerState {
     this.position = Duration.zero,
     this.duration = Duration.zero,
     this.volume = 1.0,
+    this.isMuted = false,
+    this.brightness = 1.0,
+    this.playbackSpeed = 1.0,
     this.showControls = true,
     this.hasError = false,
     this.errorMessage,
@@ -37,6 +43,9 @@ class PlayerState {
     Duration? position,
     Duration? duration,
     double? volume,
+    bool? isMuted,
+    double? brightness,
+    double? playbackSpeed,
     bool? showControls,
     bool? hasError,
     String? errorMessage,
@@ -50,6 +59,9 @@ class PlayerState {
       position: position ?? this.position,
       duration: duration ?? this.duration,
       volume: volume ?? this.volume,
+      isMuted: isMuted ?? this.isMuted,
+      brightness: brightness ?? this.brightness,
+      playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       showControls: showControls ?? this.showControls,
       hasError: hasError ?? this.hasError,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -82,9 +94,9 @@ class PlayerViewModel extends StateNotifier<PlayerState> {
         duration: controller.value.duration,
       );
 
-      AppLogger.info('Player initialized and playing: ${url.substring(0, min(80, url.length))}...');
+      AppLogger.info('Player initialized: ${url.substring(0, min(80, url.length))}...');
     } catch (e) {
-      AppLogger.error('Failed to initialize player for URL', error: e);
+      AppLogger.error('Failed to initialize player', error: e);
       state = state.copyWith(
         isLoading: false,
         hasError: true,
@@ -112,7 +124,7 @@ class PlayerViewModel extends StateNotifier<PlayerState> {
       isPlaying: controller.value.isPlaying,
       position: controller.value.position,
       duration: controller.value.duration,
-      isLoading: !controller.value.isInitialized,
+      isLoading: false,
     );
   }
 
@@ -120,7 +132,6 @@ class PlayerViewModel extends StateNotifier<PlayerState> {
     final controller = state.controller;
     if (controller == null || !controller.value.isInitialized) return;
     if (state.hasError) return;
-
     controller.play();
     state = state.copyWith(isPlaying: true);
   }
@@ -142,21 +153,84 @@ class PlayerViewModel extends StateNotifier<PlayerState> {
     state.controller?.seekTo(position);
   }
 
+  void seekForward([int seconds = 10]) {
+    final pos = state.position;
+    final dur = state.duration;
+    final target = pos + Duration(seconds: seconds);
+    seekTo(target > dur ? dur : target);
+  }
+
+  void seekBackward([int seconds = 10]) {
+    final pos = state.position;
+    final target = pos - Duration(seconds: seconds);
+    seekTo(target < Duration.zero ? Duration.zero : target);
+  }
+
   void setVolume(double volume) {
-    state.controller?.setVolume(volume);
-    state = state.copyWith(volume: volume);
+    final clamped = volume.clamp(0.0, 1.0);
+    state.controller?.setVolume(clamped);
+    state = state.copyWith(volume: clamped, isMuted: clamped == 0);
+  }
+
+  void toggleMute() {
+    final muted = !state.isMuted;
+    state.controller?.setVolume(muted ? 0.0 : state.volume);
+    state = state.copyWith(isMuted: muted);
+  }
+
+  void increaseVolume() {
+    setVolume((state.volume + 0.1).clamp(0.0, 1.0));
+  }
+
+  void decreaseVolume() {
+    setVolume((state.volume - 0.1).clamp(0.0, 1.0));
+  }
+
+  void setBrightness(double brightness) {
+    state = state.copyWith(brightness: brightness.clamp(0.0, 1.0));
+  }
+
+  Future<void> switchChannel(String url) async {
+    final oldController = state.controller;
+    if (oldController != null) {
+      oldController.removeListener(_onControllerUpdate);
+      oldController.pause();
+      oldController.dispose();
+    }
+    state = state.copyWith(
+      controller: null,
+      isInitialized: false,
+      isPlaying: false,
+      position: Duration.zero,
+      duration: Duration.zero,
+      hasError: false,
+      errorMessage: null,
+      isLoading: true,
+      showControls: true,
+    );
+    await initialize(url);
+  }
+
+  void setPlaybackSpeed(double speed) {
+    final clamped = speed.clamp(0.25, 2.0);
+    state.controller?.setPlaybackSpeed(clamped);
+    state = state.copyWith(playbackSpeed: clamped);
   }
 
   void toggleFullScreen() {
     state = state.copyWith(isFullScreen: !state.isFullScreen);
   }
 
+  void showControls() {
+    state = state.copyWith(showControls: true);
+  }
+
   void hideControls() {
     state = state.copyWith(showControls: false);
   }
 
-  void showControlsTemporarily() {
-    state = state.copyWith(showControls: true);
+  void toggleControls() {
+    state = state.copyWith(showControls: !state.showControls);
   }
 
   Future<void> retry(String url) async {
