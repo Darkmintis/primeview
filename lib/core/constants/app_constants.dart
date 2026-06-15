@@ -27,7 +27,7 @@ class AppConstants {
   static const String categoryRecentlyWatched = 'Recently Watched';
 
   static const double channelLogoSize = 48.0;
-  static const double heroBannerHeight = 420.0;
+  static const double heroBannerHeight = 380.0;
   static const double channelRowHeight = 180.0;
   static const Duration animationDuration = Duration(milliseconds: 300);
 
