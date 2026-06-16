@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 import '../viewmodels/playlist_viewmodel.dart';
 
@@ -38,41 +39,41 @@ class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Playlist'),
+        title: Text('Add Playlist'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
+            Center(
               child: Icon(
                 Icons.live_tv,
-                size: 72,
+                size: 72.sp,
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 16),
-            const Center(
+            SizedBox(height: 16.h),
+            Center(
               child: Text(
                 'PrimeView',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Text(
+            SizedBox(height: 32.h),
+            Text(
               'Playlist URL',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             TextField(
               controller: _urlController,
               decoration: const InputDecoration(
@@ -80,12 +81,12 @@ class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
                 prefixIcon: Icon(Icons.link, color: AppColors.textMuted),
               ),
               keyboardType: TextInputType.url,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 48.h,
               child: ElevatedButton(
                 onPressed: _hasUrl
                     ? () => _loadFromUrl(_urlController.text)
@@ -94,39 +95,39 @@ class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Load from URL',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Row(
+            SizedBox(height: 32.h),
+            Row(
               children: [
                 Expanded(child: Divider()),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Text(
                     'OR',
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 14),
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 14.sp),
                   ),
                 ),
                 Expanded(child: Divider()),
               ],
             ),
-            const SizedBox(height: 32),
-            const Text(
+            SizedBox(height: 32.h),
+            Text(
               'Paste M3U Content',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             TextField(
               controller: _fileController,
               decoration: const InputDecoration(
@@ -134,12 +135,12 @@ class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
                 alignLabelWithHint: true,
               ),
               maxLines: 8,
-              style: const TextStyle(color: Colors.white, fontFamily: 'monospace', fontSize: 12),
+              style: TextStyle(color: Colors.white, fontFamily: 'monospace', fontSize: 12.sp),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 48.h,
               child: ElevatedButton(
                 onPressed: _hasFile
                     ? () => _loadFromFile(_fileController.text)
@@ -148,41 +149,41 @@ class _PlaylistInputViewState extends ConsumerState<PlaylistInputView> {
                   backgroundColor: AppColors.surfaceLight,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Load from Content',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: AppColors.surfaceLight,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.r),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'What is an M3U playlist?',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'An M3U file contains a list of TV channels with their stream URLs. '
                     'You can get one from your IPTV provider. '
                     'The file starts with #EXTM3U and contains #EXTINF entries.',
                     style: TextStyle(
                       color: AppColors.textSecondary,
-                      fontSize: 13,
+                      fontSize: 13.sp,
                     ),
                   ),
                 ],

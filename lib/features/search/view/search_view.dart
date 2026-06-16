@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
@@ -47,8 +48,8 @@ class _SearchViewState extends ConsumerState<SearchView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (ctx) {
         return _FilterSheet(
@@ -84,37 +85,37 @@ class _SearchViewState extends ConsumerState<SearchView> {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (ctx) {
         final current = ref.read(searchProvider).selectedCategory;
         return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
-                  width: 40,
-                  height: 4,
+                  width: 40.w,
+                  height: 4.h,
                   decoration: BoxDecoration(
                     color: AppColors.textMuted,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16.h),
+              Text(
                 'Select Category',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -155,8 +156,8 @@ class _SearchViewState extends ConsumerState<SearchView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (ctx) {
         return StatefulBuilder(
@@ -173,9 +174,9 @@ class _SearchViewState extends ConsumerState<SearchView> {
 
             return Padding(
               padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 12,
+                left: 20.w,
+                right: 20.w,
+                top: 12.h,
                 bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
               ),
               child: Column(
@@ -184,54 +185,54 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 children: [
                   Center(
                     child: Container(
-                      width: 40,
-                      height: 4,
+                      width: 40.w,
+                      height: 4.h,
                       decoration: BoxDecoration(
                         color: AppColors.textMuted,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16.h),
+                  Text(
                     'Select Country',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: TextField(
                       controller: countryController,
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
                       decoration: InputDecoration(
                         hintText: 'Search countries...',
                         hintStyle: TextStyle(
                           color: AppColors.textMuted.withValues(alpha: 0.7),
-                          fontSize: 13,
+                          fontSize: 13.sp,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search,
                           color: AppColors.textMuted,
-                          size: 18,
+                          size: 18.sp,
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 10,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 10.h,
                         ),
                       ),
                       onChanged: (v) =>
                           setSheetState(() => countryQuery = v.toLowerCase()),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Flexible(
                     child: ListView(
                       shrinkWrap: true,
@@ -271,12 +272,12 @@ class _SearchViewState extends ConsumerState<SearchView> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
         decoration: BoxDecoration(
           color: isActive
               ? AppColors.primary.withValues(alpha: 0.15)
               : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isActive ? AppColors.primary : AppColors.divider,
           ),
@@ -286,21 +287,21 @@ class _SearchViewState extends ConsumerState<SearchView> {
           children: [
             Icon(
               icon,
-              size: 14,
+              size: 14.sp,
               color: isActive ? AppColors.primary : AppColors.textMuted,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6.w),
             Text(
               label,
               style: TextStyle(
                 color: isActive ? AppColors.primary : AppColors.textSecondary,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
             if (isActive) ...[
-              const SizedBox(width: 4),
-              const Icon(Icons.close, size: 12, color: AppColors.primary),
+              SizedBox(width: 4.w),
+              Icon(Icons.close, size: 12.sp, color: AppColors.primary),
             ],
           ],
         ),
@@ -324,17 +325,17 @@ class _SearchViewState extends ConsumerState<SearchView> {
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
+                left: 16.w,
+                right: 16.w,
                 top: MediaQuery.of(context).padding.top + 8,
-                bottom: 8,
+                bottom: 8.h,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(14.r),
                 child: Container(
                   decoration: BoxDecoration(
                     color: AppColors.surfaceLight,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14.r),
                     border: Border.all(
                       color: hasFilters ? AppColors.primary : AppColors.divider,
                       width: hasFilters ? 1.5 : 1,
@@ -343,19 +344,19 @@ class _SearchViewState extends ConsumerState<SearchView> {
                   child: TextField(
                     controller: _searchController,
                     focusNode: _focusNode,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
                     decoration: InputDecoration(
                       hintText: 'Search channels...',
                       hintStyle: TextStyle(
                         color: AppColors.textMuted.withValues(alpha: 0.7),
-                        fontSize: 15,
+                        fontSize: 15.sp,
                       ),
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(left: 16, right: 8),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(left: 16.w, right: 8.w),
                         child: Icon(
                           Icons.search,
                           color: AppColors.textMuted,
-                          size: 22,
+                          size: 22.sp,
                         ),
                       ),
                       suffixIcon: Row(
@@ -363,10 +364,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
                         children: [
                           if (hasFilters)
                             Padding(
-                              padding: const EdgeInsets.only(right: 4),
+                              padding: EdgeInsets.only(right: 4.w),
                               child: Container(
-                                width: 8,
-                                height: 8,
+                                width: 8.w,
+                                height: 8.h,
                                 decoration: const BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
@@ -375,15 +376,15 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             ),
                           GestureDetector(
                             onTap: _showFilterSheet,
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                                horizontal: 10.w,
+                                vertical: 12.h,
                               ),
                               child: Icon(
                                 Icons.filter_list,
                                 color: AppColors.textMuted,
-                                size: 22,
+                                size: 22.sp,
                               ),
                             ),
                           ),
@@ -393,23 +394,23 @@ class _SearchViewState extends ConsumerState<SearchView> {
                                 _searchController.clear();
                                 ref.read(searchProvider.notifier).setQuery('');
                               },
-                              child: const Padding(
+                              child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 12,
+                                  horizontal: 10.w,
+                                  vertical: 12.h,
                                 ),
                                 child: Icon(
                                   Icons.clear,
                                   color: AppColors.textMuted,
-                                  size: 20,
+                                  size: 20.sp,
                                 ),
                               ),
                             ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4.w),
                         ],
                       ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(vertical: 14.h),
                     ),
                     onChanged: (value) {
                       ref.read(searchProvider.notifier).setQuery(value);
@@ -421,7 +422,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+              padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 4.h),
               child: Row(
                 children: [
                   _buildFilterChip(
@@ -430,7 +431,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     isActive: searchState.selectedCategory != null,
                     onTap: () => _showCategoryPicker(),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   _buildFilterChip(
                     label: searchState.selectedCountry ?? 'Country',
                     icon: Icons.flag,
@@ -442,11 +443,11 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     GestureDetector(
                       onTap: () =>
                           ref.read(searchProvider.notifier).clearFilters(),
-                      child: const Text(
+                      child: Text(
                         'Clear',
                         style: TextStyle(
                           color: AppColors.textMuted,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -458,12 +459,12 @@ class _SearchViewState extends ConsumerState<SearchView> {
           if (searchState.query.isNotEmpty || searchResults.isNotEmpty)
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 4.h),
                 child: Text(
                   '${searchResults.length} of ${channels.length} channels',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textMuted,
-                    fontSize: 13,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),
@@ -474,25 +475,25 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.live_tv_outlined,
-                      size: 72,
+                      size: 72.sp,
                       color: AppColors.textMuted,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       '${channels.length} channels available',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textMuted,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8.h),
+                    Text(
                       'Search or tap filter to find channels',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ],
@@ -505,25 +506,25 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.search_off,
-                      size: 64,
+                      size: 64.sp,
                       color: AppColors.textMuted,
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    SizedBox(height: 16.h),
+                    Text(
                       'No channels found',
                       style: TextStyle(
                         color: AppColors.textMuted,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       'Try adjusting your filters or search term',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ],
@@ -535,7 +536,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: ChannelListItem(channel: searchResults[index]),
                 );
               },
@@ -550,10 +551,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,
           ),
@@ -562,7 +563,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
           htmlDecode(label),
           style: TextStyle(
             color: selected ? Colors.white : AppColors.textSecondary,
-            fontSize: 13,
+            fontSize: 13.sp,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
@@ -574,10 +575,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,
           ),
@@ -587,14 +588,14 @@ class _SearchViewState extends ConsumerState<SearchView> {
             Icon(
               selected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: selected ? Colors.white : AppColors.textMuted,
-              size: 18,
+              size: 18.sp,
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Text(
               htmlDecode(label),
               style: TextStyle(
                 color: selected ? Colors.white : AppColors.textSecondary,
-                fontSize: 13,
+                fontSize: 13.sp,
               ),
             ),
           ],
@@ -651,7 +652,7 @@ class _FilterSheetState extends State<_FilterSheet> {
       expand: false,
       builder: (context, scrollController) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 16.h),
           child: SingleChildScrollView(
             controller: scrollController,
             child: Column(
@@ -660,33 +661,33 @@ class _FilterSheetState extends State<_FilterSheet> {
               children: [
                 Center(
                   child: Container(
-                    width: 40,
-                    height: 4,
+                    width: 40.w,
+                    height: 4.h,
                     decoration: BoxDecoration(
                       color: AppColors.textMuted,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(2.r),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20.h),
+                Text(
                   'Filter Channels',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20.h),
+                Text(
                   'Category',
                   style: TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -706,46 +707,46 @@ class _FilterSheetState extends State<_FilterSheet> {
                   ],
                 ),
                 if (widget.countries.isNotEmpty) ...[
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Country',
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 13,
+                          fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const Spacer(),
                       Text(
                         '${widget.countries.length} countries',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: TextField(
                       controller: _countrySearchController,
-                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                      style: TextStyle(color: Colors.white, fontSize: 13.sp),
                       decoration: InputDecoration(
                         hintText: 'Search countries...',
                         hintStyle: TextStyle(
                           color: AppColors.textMuted.withValues(alpha: 0.7),
-                          fontSize: 13,
+                          fontSize: 13.sp,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search,
                           color: AppColors.textMuted,
-                          size: 18,
+                          size: 18.sp,
                         ),
                         suffixIcon: _countryQuery.isNotEmpty
                             ? GestureDetector(
@@ -753,32 +754,32 @@ class _FilterSheetState extends State<_FilterSheet> {
                                   _countrySearchController.clear();
                                   setState(() => _countryQuery = '');
                                 },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(12),
+                                child: Padding(
+                                  padding: EdgeInsets.all(12.w),
                                   child: Icon(
                                     Icons.clear,
                                     color: AppColors.textMuted,
-                                    size: 18,
+                                    size: 18.sp,
                                   ),
                                 ),
                               )
                             : null,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 10,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 10.h,
                         ),
                       ),
                       onChanged: (v) =>
                           setState(() => _countryQuery = v.toLowerCase()),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: _filteredCountries.length + 1,
-                    separatorBuilder: (_, _) => const SizedBox(height: 4),
+                    separatorBuilder: (_, _) => SizedBox(height: 4.h),
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return _countryChip(
@@ -796,7 +797,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     },
                   ),
                 ],
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -804,14 +805,14 @@ class _FilterSheetState extends State<_FilterSheet> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Apply Filters',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16.sp),
                     ),
                   ),
                 ),
@@ -828,10 +829,10 @@ class _FilterSheetState extends State<_FilterSheet> {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,
           ),
@@ -840,7 +841,7 @@ class _FilterSheetState extends State<_FilterSheet> {
           htmlDecode(label),
           style: TextStyle(
             color: selected ? Colors.white : AppColors.textSecondary,
-            fontSize: 13,
+            fontSize: 13.sp,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
@@ -859,10 +860,10 @@ class _FilterSheetState extends State<_FilterSheet> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,
           ),
@@ -872,14 +873,14 @@ class _FilterSheetState extends State<_FilterSheet> {
             Icon(
               selected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: selected ? Colors.white : AppColors.textMuted,
-              size: 18,
+              size: 18.sp,
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Text(
               htmlDecode(label),
               style: TextStyle(
                 color: selected ? Colors.white : AppColors.textSecondary,
-                fontSize: 13,
+                fontSize: 13.sp,
               ),
             ),
           ],

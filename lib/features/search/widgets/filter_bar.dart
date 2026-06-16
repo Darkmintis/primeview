@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
@@ -25,10 +26,10 @@ class FilterBar extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 40,
+            height: 40.h,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
               itemCount: categories.length + 2,
               itemBuilder: (context, index) {
                 if (index == 0) {
@@ -69,25 +70,25 @@ class FilterBar extends ConsumerWidget {
               searchState.selectedLanguage != null ||
               searchState.selectedCountry != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               child: Text(
                 'Active: ${[
                   if (searchState.selectedCategory != null) 'Category: ${searchState.selectedCategory}',
                   if (searchState.selectedLanguage != null) 'Lang: ${searchState.selectedLanguage}',
                   if (searchState.selectedCountry != null) 'Country: ${searchState.selectedCountry}',
                 ].join(' | ')}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primary,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           if (languages.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12, top: 4),
+              padding: EdgeInsets.only(left: 12.w, right: 12.w, top: 4.h),
               child: SizedBox(
-                height: 32,
+                height: 32.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: languages.length,
@@ -110,9 +111,9 @@ class FilterBar extends ConsumerWidget {
             ),
           if (countries.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12, top: 4, bottom: 8),
+              padding: EdgeInsets.only(left: 12.w, right: 12.w, top: 4.h, bottom: 8.h),
               child: SizedBox(
-                height: 32,
+                height: 32.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: countries.length,
@@ -148,7 +149,7 @@ class FilterBar extends ConsumerWidget {
   }) {
     if (hidden) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3),
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
@@ -159,7 +160,7 @@ class FilterBar extends ConsumerWidget {
           ),
           decoration: BoxDecoration(
             color: isSelected ? activeColor : AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: isSelected ? activeColor : AppColors.divider,
               width: 1,
@@ -196,15 +197,15 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (hidden) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3),
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primary : AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: isSelected ? AppColors.primary : AppColors.divider,
               width: 1,
@@ -214,7 +215,7 @@ class _Chip extends StatelessWidget {
             label,
             style: TextStyle(
               color: isSelected ? Colors.white : AppColors.textSecondary,
-              fontSize: 13,
+              fontSize: 13.sp,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),
           ),

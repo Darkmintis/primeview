@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_constants.dart';
@@ -30,7 +31,7 @@ class HeroBanner extends ConsumerWidget {
             left: 0,
             right: 0,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -39,31 +40,31 @@ class HeroBanner extends ConsumerWidget {
                       _buildCategoryBadge(),
                       if (channel.country != null &&
                           channel.country!.isNotEmpty) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         _buildInfoBadge(
                           channel.country!.toUpperCase(),
                         ),
                       ],
                       if (channel.language != null &&
                           channel.language!.isNotEmpty) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         _buildInfoBadge(channel.language!),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Text(
                     channel.name,
                     style: GoogleFonts.playfairDisplay(
                       color: Colors.white,
-                      fontSize: 32,
+                      fontSize: 32.sp,
                       fontWeight: FontWeight.w700,
                       height: 1.1,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       _buildActionButton(
@@ -78,7 +79,7 @@ class HeroBanner extends ConsumerWidget {
                           );
                         },
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       _buildActionButton(
                         label: 'Info',
                         icon: Icons.info_outline_rounded,
@@ -124,7 +125,7 @@ class HeroBanner extends ConsumerWidget {
       child: Center(
         child: Icon(
           Icons.live_tv_rounded,
-          size: 80,
+          size: 80.sp,
           color: AppColors.textMuted.withValues(alpha: 0.3),
         ),
       ),
@@ -133,16 +134,16 @@ class HeroBanner extends ConsumerWidget {
 
   Widget _buildCategoryBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: AppColors.primary,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
       child: Text(
         channel.category ?? 'Channel',
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 11,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),
@@ -152,16 +153,16 @@ class HeroBanner extends ConsumerWidget {
 
   Widget _buildInfoBadge(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 11,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -177,12 +178,12 @@ class HeroBanner extends ConsumerWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: isPrimary
               ? Colors.white
               : Colors.white.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -190,14 +191,14 @@ class HeroBanner extends ConsumerWidget {
             Icon(
               icon,
               color: isPrimary ? Colors.black : Colors.white,
-              size: 22,
+              size: 22.sp,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8.w),
             Text(
               label,
               style: TextStyle(
                 color: isPrimary ? Colors.black : Colors.white,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -211,35 +212,35 @@ class HeroBanner extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 channel.name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _infoRow('Category', channel.category),
               if (channel.language != null)
                 _infoRow('Language', channel.language),
               if (channel.group != null) _infoRow('Group', channel.group),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Text(
                 channel.url,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textMuted,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -254,21 +255,21 @@ class HeroBanner extends ConsumerWidget {
   Widget _infoRow(String label, String? value) {
     if (value == null) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
         children: [
           Text(
             '$label: ',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textMuted,
-              fontSize: 14,
+              fontSize: 14.sp,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w500,
             ),
           ),

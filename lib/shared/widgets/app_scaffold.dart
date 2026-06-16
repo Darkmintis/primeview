@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/navigation_provider.dart';
 import '../../core/theme/app_colors.dart';
@@ -37,8 +38,8 @@ class AppScaffold extends ConsumerWidget {
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textMuted,
           type: BottomNavigationBarType.fixed,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
+          selectedFontSize: 12.sp,
+          unselectedFontSize: 12.sp,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),

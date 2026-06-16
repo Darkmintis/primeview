@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/models/channel_model.dart';
@@ -146,19 +147,19 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.only(left: 4, top: 4),
+        padding: EdgeInsets.only(left: 4.w, top: 4.h),
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 26),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: 26.sp),
               onPressed: () => Navigator.of(context).pop(),
             ),
             Expanded(
               child: Text(
                 widget.channelName,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
                 ),
                 maxLines: 1,
@@ -176,8 +177,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
       child: GestureDetector(
         onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
         child: Container(
-          width: 72,
-          height: 72,
+          width: 72.w,
+          height: 72.h,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white.withValues(alpha: 0.2),
@@ -185,7 +186,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
           child: Icon(
             playerState.isPlaying ? Icons.pause : Icons.play_arrow,
             color: Colors.white,
-            size: 44,
+            size: 44.sp,
           ),
         ),
       ),
@@ -197,13 +198,13 @@ class _VideoControlsState extends ConsumerState<VideoControls>
       child: GestureDetector(
         onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
         child: Container(
-          width: 56,
-          height: 56,
+          width: 56.w,
+          height: 56.h,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white.withValues(alpha: 0.15),
           ),
-          child: const Icon(Icons.play_arrow, color: Colors.white, size: 36),
+          child: Icon(Icons.play_arrow, color: Colors.white, size: 36.sp),
         ),
       ),
     );
@@ -217,14 +218,14 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         }
       },
       child: Container(
-        height: 60,
+        height: 60.h,
         alignment: Alignment.center,
         child: Container(
-          width: 32,
-          height: 4,
+          width: 32.w,
+          height: 4.h,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(2.r),
           ),
         ),
       ),
@@ -242,8 +243,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (ctx) {
         return DraggableScrollableSheet(
@@ -253,29 +254,29 @@ class _VideoControlsState extends ConsumerState<VideoControls>
           expand: false,
           builder: (ctx, scrollController) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 16.h),
               child: Column(
                 children: [
                   Center(
                     child: Container(
-                      width: 40,
-                      height: 4,
+                      width: 40.w,
+                      height: 4.h,
                       decoration: BoxDecoration(
                         color: AppColors.textMuted,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16.h),
+                  Text(
                     'Switch Channel',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,
@@ -305,11 +306,11 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         }
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 3),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        margin: EdgeInsets.symmetric(vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: isCurrent ? AppColors.primary.withValues(alpha: 0.15) : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           border: Border.all(
             color: isCurrent ? AppColors.primary : Colors.transparent,
             width: 1,
@@ -318,30 +319,30 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(6.r),
               child: SizedBox(
-                width: 44,
-                height: 44,
+                width: 44.w,
+                height: 44.h,
                 child: channel.logo != null && channel.logo!.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: channel.logo!,
                         fit: BoxFit.contain,
                         placeholder: (_, _) => Container(
                           color: AppColors.surfaceLight,
-                          child: const Icon(Icons.tv, color: AppColors.textMuted, size: 20),
+                          child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
                         ),
                         errorWidget: (_, _, _) => Container(
                           color: AppColors.surfaceLight,
-                          child: const Icon(Icons.tv, color: AppColors.textMuted, size: 20),
+                          child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
                         ),
                       )
                     : Container(
                         color: AppColors.surfaceLight,
-                        child: const Icon(Icons.tv, color: AppColors.textMuted, size: 20),
+                        child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
                       ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +351,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                     htmlDecode(channel.name),
                     style: TextStyle(
                       color: isCurrent ? AppColors.primary : Colors.white,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400,
                     ),
                     maxLines: 1,
@@ -359,9 +360,9 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                   if (channel.category != null && channel.category!.isNotEmpty)
                     Text(
                       htmlDecode(channel.category!),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textMuted,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -371,16 +372,16 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             ),
             if (isCurrent)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.r),
                 ),
-                child: const Text(
+                child: Text(
                   'NOW',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 9,
+                    fontSize: 9.sp,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                   ),

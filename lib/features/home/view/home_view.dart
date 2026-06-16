@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_constants.dart';
@@ -48,31 +49,31 @@ class _HomeViewState extends ConsumerState<HomeView> {
       return Scaffold(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.tv_off, size: 72, color: AppColors.textMuted),
-                const SizedBox(height: 16),
-                const Text(
+                Icon(Icons.tv_off, size: 72.sp, color: AppColors.textMuted),
+                SizedBox(height: 16.h),
+                Text(
                   'No channels available',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 22.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   ref.read(playlistProvider.notifier).errorMessage ??
                       'Failed to load channels.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -83,9 +84,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   label: const Text('Add Playlist'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 32.w,
+                      vertical: 12.h,
                     ),
                   ),
                 ),
@@ -97,11 +98,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
     }
 
     if (channels.isEmpty) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
           child: Text(
             'No channels found in playlist',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16.sp),
           ),
         ),
       );
@@ -126,13 +127,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ),
             title: Image.asset(
               'assets/primeview_logo.png',
-              height: 28,
+              height: 28.h,
               color: AppColors.primary,
               errorBuilder: (_, _, _) => Text(
                 'PrimeView',
                 style: GoogleFonts.rubikDirt(
                   color: AppColors.primary,
-                  fontSize: 26,
+                  fontSize: 26.sp,
                   letterSpacing: 1,
                 ),
               ),
@@ -157,7 +158,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'add_playlist',
                     child: Row(
                       children: [
@@ -165,17 +166,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           Icons.add_circle_outline,
                           color: AppColors.textPrimary,
                         ),
-                        SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Text('Add Playlist'),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'about',
                     child: Row(
                       children: [
                         Icon(Icons.info_outline, color: AppColors.textPrimary),
-                        SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Text('About'),
                       ],
                     ),
@@ -186,32 +187,32 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+              padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 12.h),
               child: Row(
                 children: [
                   Text(
                     'All Channels',
                     style: GoogleFonts.playfairDisplay(
                       color: Colors.white,
-                      fontSize: 26,
+                      fontSize: 26.sp,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Text(
                       '${channels.length}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.primary,
-                        fontSize: 13,
+                        fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -221,7 +222,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             sliver: SliverGrid.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
@@ -235,7 +236,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               },
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          SliverToBoxAdapter(child: SizedBox(height: 100.h)),
         ],
       ),
     );
@@ -271,15 +272,15 @@ class _ChannelGridCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(10),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(10.r),
                 ),
                 child: Stack(
                   fit: StackFit.expand,
@@ -290,29 +291,29 @@ class _ChannelGridCard extends StatelessWidget {
                           ? CachedNetworkImage(
                               imageUrl: channel.logo!,
                               fit: BoxFit.contain,
-                              placeholder: (_, _) => const Center(
+                              placeholder: (_, _) => Center(
                                 child: SizedBox(
-                                  width: 20,
-                                  height: 20,
+                                  width: 20.w,
+                                  height: 20.h,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     color: AppColors.primary,
                                   ),
                                 ),
                               ),
-                              errorWidget: (_, _, _) => const Center(
+                              errorWidget: (_, _, _) => Center(
                                 child: Icon(
                                   Icons.tv,
                                   color: AppColors.textMuted,
-                                  size: 32,
+                                  size: 32.sp,
                                 ),
                               ),
                             )
-                          : const Center(
+                          : Center(
                               child: Icon(
                                 Icons.tv,
                                 color: AppColors.textMuted,
-                                size: 32,
+                                size: 32.sp,
                               ),
                             ),
                     ),
@@ -321,19 +322,19 @@ class _ChannelGridCard extends StatelessWidget {
                         top: 4,
                         right: 4,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 1,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                            vertical: 1.h,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.black54,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
                             channel.country!.toUpperCase(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 8,
+                              fontSize: 8.sp,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.5,
                             ),
@@ -345,29 +346,29 @@ class _ChannelGridCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(6),
+              padding: EdgeInsets.all(6.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     htmlDecode(channel.name),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 11,
+                      fontSize: 11.sp,
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2.h),
                   Row(
                     children: [
                       Expanded(
                         child: Text(
                           htmlDecode(channel.category ?? ''),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textMuted,
-                            fontSize: 9,
+                            fontSize: 9.sp,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -375,19 +376,19 @@ class _ChannelGridCard extends StatelessWidget {
                       ),
                       if (hasLanguage)
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 3,
-                            vertical: 1,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 3.w,
+                            vertical: 1.h,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.surfaceLight,
-                            borderRadius: BorderRadius.circular(3),
+                            borderRadius: BorderRadius.circular(3.r),
                           ),
                           child: Text(
                             channel.language!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textSecondary,
-                              fontSize: 7,
+                              fontSize: 7.sp,
                             ),
                           ),
                         ),

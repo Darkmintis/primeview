@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -62,18 +63,18 @@ class ChannelLoadingSkeleton extends StatelessWidget {
             left: 0,
             right: 0,
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const ShimmerBlock(width: 80, height: 24, borderRadius: 4),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   const ShimmerBlock(width: 280, height: 32, borderRadius: 4),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       const ShimmerBlock(width: 120, height: 40, borderRadius: 4),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       const ShimmerBlock(width: 100, height: 40, borderRadius: 4),
                     ],
                   ),
@@ -88,15 +89,15 @@ class ChannelLoadingSkeleton extends StatelessWidget {
 
   Widget _buildCategoryBarSkeleton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       child: Row(
         children: [
           const ShimmerBlock(width: 60, height: 32, borderRadius: 16),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           const ShimmerBlock(width: 80, height: 32, borderRadius: 16),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           const ShimmerBlock(width: 70, height: 32, borderRadius: 16),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           const ShimmerBlock(width: 90, height: 32, borderRadius: 16),
         ],
       ),
@@ -108,7 +109,7 @@ class ChannelLoadingSkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h, bottom: 8.h),
           child: Row(
             children: [
               const ShimmerBlock(width: 160, height: 22, borderRadius: 4),
@@ -121,19 +122,19 @@ class ChannelLoadingSkeleton extends StatelessWidget {
           height: AppConstants.channelRowHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             physics: const NeverScrollableScrollPhysics(),
             itemCount: 7,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const ShimmerBlock(width: 130, height: 130, borderRadius: 8),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     const ShimmerBlock(width: 100, height: 14, borderRadius: 4),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     const ShimmerBlock(width: 70, height: 12, borderRadius: 4),
                   ],
                 ),
