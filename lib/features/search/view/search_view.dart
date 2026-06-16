@@ -26,49 +26,6 @@ class _SearchViewState extends ConsumerState<SearchView> {
     super.dispose();
   }
 
-  void _showFilterSheet() {
-    final channels = ref.read(channelsProvider);
-    final allCategories =
-        channels
-            .map((c) => htmlDecode(c.category ?? ''))
-            .where((c) => c.isNotEmpty)
-            .toSet()
-            .toList()
-          ..sort();
-    final allCountries =
-        channels
-            .map((c) => c.country)
-            .where((c) => c != null && c.isNotEmpty)
-            .map((c) => c!)
-            .toSet()
-            .toList()
-          ..sort();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (ctx) {
-        return _FilterSheet(
-          categories: AppConstants.predefinedCategories
-              .where((c) => allCategories.contains(c))
-              .toList(),
-          countries: allCountries,
-          onApply: (category, country) {
-            ref.read(searchProvider.notifier).setCategoryFilter(category);
-            ref.read(searchProvider.notifier).setCountryFilter(country);
-            Navigator.of(ctx).pop();
-          },
-          selectedCategory: ref.read(searchProvider).selectedCategory,
-          selectedCountry: ref.read(searchProvider).selectedCountry,
-        );
-      },
-    );
-  }
-
   void _showCategoryPicker() {
     final channels = ref.read(channelsProvider);
     final allCategories =
@@ -84,55 +41,76 @@ class _SearchViewState extends ConsumerState<SearchView> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
         final current = ref.read(searchProvider).selectedCategory;
-        return Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.textMuted,
-                    borderRadius: BorderRadius.circular(2.r),
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.textMuted,
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Select Category',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
+                SizedBox(height: 20.h),
+                Row(
+                  children: [
+                    Container(
+                      width: 36.w,
+                      height: 36.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Icon(
+                        Icons.category,
+                        color: AppColors.primary,
+                        size: 20.sp,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Text(
+                      'Select Category',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 16.h),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _filterChip('All', current == null, () {
-                    ref.read(searchProvider.notifier).setCategoryFilter(null);
-                    Navigator.of(ctx).pop();
-                  }),
-                  ...filtered.map(
-                    (c) => _filterChip(c, current == c, () {
-                      ref.read(searchProvider.notifier).setCategoryFilter(c);
+                SizedBox(height: 20.h),
+                Wrap(
+                  spacing: 10.w,
+                  runSpacing: 10.h,
+                  children: [
+                    _buildCategoryOption('All', current == null, () {
+                      ref.read(searchProvider.notifier).setCategoryFilter(null);
                       Navigator.of(ctx).pop();
                     }),
-                  ),
-                ],
-              ),
-            ],
+                    ...filtered.map(
+                      (c) => _buildCategoryOption(c, current == c, () {
+                        ref.read(searchProvider.notifier).setCategoryFilter(c);
+                        Navigator.of(ctx).pop();
+                      }),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -155,10 +133,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
@@ -172,95 +147,241 @@ class _SearchViewState extends ConsumerState<SearchView> {
                       )
                       .toList();
 
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 20.w,
-                right: 20.w,
-                top: 12.h,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+            return Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.textMuted,
-                        borderRadius: BorderRadius.circular(2.r),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Select Country',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceLight,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: TextField(
-                      controller: countryController,
-                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                      decoration: InputDecoration(
-                        hintText: 'Search countries...',
-                        hintStyle: TextStyle(
-                          color: AppColors.textMuted.withValues(alpha: 0.7),
-                          fontSize: 13.sp,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 20.w,
+                  right: 20.w,
+                  top: 12.h,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
                           color: AppColors.textMuted,
-                          size: 18.sp,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 4.w,
-                          vertical: 10.h,
+                          borderRadius: BorderRadius.circular(2.r),
                         ),
                       ),
-                      onChanged: (v) =>
-                          setSheetState(() => countryQuery = v.toLowerCase()),
                     ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Flexible(
-                    child: ListView(
-                      shrinkWrap: true,
+                    SizedBox(height: 20.h),
+                    Row(
                       children: [
-                        _countryChip('All Countries', current == null, () {
-                          ref
-                              .read(searchProvider.notifier)
-                              .setCountryFilter(null);
-                          Navigator.of(ctx).pop();
-                        }),
-                        ...filtered.map(
-                          (c) => _countryChip(c, current == c, () {
-                            ref
-                                .read(searchProvider.notifier)
-                                .setCountryFilter(c);
-                            Navigator.of(ctx).pop();
-                          }),
+                        Container(
+                          width: 36.w,
+                          height: 36.h,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Icon(
+                            Icons.flag,
+                            color: AppColors.primary,
+                            size: 20.sp,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Select Country',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              '${allCountries.length} countries available',
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(height: 16.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceLight,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: AppColors.divider),
+                      ),
+                      child: TextField(
+                        controller: countryController,
+                        style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                        decoration: InputDecoration(
+                          hintText: 'Search countries...',
+                          hintStyle: TextStyle(
+                            color: AppColors.textMuted.withValues(alpha: 0.7),
+                            fontSize: 14.sp,
+                          ),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(12.w),
+                            child: Icon(
+                              Icons.search,
+                              color: AppColors.textMuted,
+                              size: 20.sp,
+                            ),
+                          ),
+                          suffixIcon: countryQuery.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    countryController.clear();
+                                    setSheetState(() => countryQuery = '');
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12.w),
+                                    child: Icon(
+                                      Icons.clear,
+                                      color: AppColors.textMuted,
+                                      size: 18.sp,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 4.w,
+                            vertical: 12.h,
+                          ),
+                        ),
+                        onChanged: (v) =>
+                            setSheetState(() => countryQuery = v.toLowerCase()),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Flexible(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          _buildCountryOption(
+                            'All Countries',
+                            current == null,
+                            () {
+                              ref
+                                  .read(searchProvider.notifier)
+                                  .setCountryFilter(null);
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                          ...filtered.map(
+                            (c) => _buildCountryOption(c, current == c, () {
+                              ref
+                                  .read(searchProvider.notifier)
+                                  .setCountryFilter(c);
+                              Navigator.of(ctx).pop();
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
         );
       },
     ).whenComplete(() => countryController.dispose());
+  }
+
+  Widget _buildCategoryOption(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (selected)
+              Padding(
+                padding: EdgeInsets.only(right: 6.w),
+                child: Icon(Icons.check, color: Colors.white, size: 16.sp),
+              ),
+            Text(
+              htmlDecode(label),
+              style: TextStyle(
+                color: selected ? Colors.white : AppColors.textSecondary,
+                fontSize: 14.sp,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCountryOption(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        margin: EdgeInsets.symmetric(vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: selected ? AppColors.primary : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 22.w,
+              height: 22.h,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: selected ? AppColors.primary : Colors.transparent,
+                border: Border.all(
+                  color: selected ? AppColors.primary : AppColors.textMuted,
+                  width: 2,
+                ),
+              ),
+              child: selected
+                  ? Icon(Icons.check, color: Colors.white, size: 14.sp)
+                  : null,
+            ),
+            SizedBox(width: 12.w),
+            Text(
+              htmlDecode(label),
+              style: TextStyle(
+                color: selected ? AppColors.primary : Colors.white,
+                fontSize: 14.sp,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildFilterChip({
@@ -330,17 +451,28 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 top: MediaQuery.of(context).padding.top + 8,
                 bottom: 8.h,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14.r),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceLight,
-                    borderRadius: BorderRadius.circular(14.r),
-                    border: Border.all(
-                      color: hasFilters ? AppColors.primary : AppColors.divider,
-                      width: hasFilters ? 1.5 : 1,
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLight,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(
+                    color: hasFilters || _focusNode.hasFocus
+                        ? AppColors.primary.withValues(alpha: 0.7)
+                        : AppColors.divider,
+                    width: hasFilters || _focusNode.hasFocus ? 1.5 : 1,
                   ),
+                  boxShadow: hasFilters || _focusNode.hasFocus
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            blurRadius: 8.r,
+                            spreadRadius: 0,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14.r),
                   child: TextField(
                     controller: _searchController,
                     focusNode: _focusNode,
@@ -374,20 +506,6 @@ class _SearchViewState extends ConsumerState<SearchView> {
                                 ),
                               ),
                             ),
-                          GestureDetector(
-                            onTap: _showFilterSheet,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 12.h,
-                              ),
-                              child: Icon(
-                                Icons.filter_list,
-                                color: AppColors.textMuted,
-                                size: 22.sp,
-                              ),
-                            ),
-                          ),
                           if (_searchController.text.isNotEmpty)
                             GestureDetector(
                               onTap: () {
@@ -462,10 +580,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 4.h),
                 child: Text(
                   '${searchResults.length} of ${channels.length} channels',
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 13.sp,
-                  ),
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
                 ),
               ),
             ),
@@ -542,349 +657,6 @@ class _SearchViewState extends ConsumerState<SearchView> {
               },
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _filterChip(String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
-          ),
-        ),
-        child: Text(
-          htmlDecode(label),
-          style: TextStyle(
-            color: selected ? Colors.white : AppColors.textSecondary,
-            fontSize: 13.sp,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _countryChip(String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: selected ? Colors.white : AppColors.textMuted,
-              size: 18.sp,
-            ),
-            SizedBox(width: 10.w),
-            Text(
-              htmlDecode(label),
-              style: TextStyle(
-                color: selected ? Colors.white : AppColors.textSecondary,
-                fontSize: 13.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FilterSheet extends StatefulWidget {
-  final List<String> categories;
-  final List<String> countries;
-  final void Function(String? category, String? country) onApply;
-  final String? selectedCategory;
-  final String? selectedCountry;
-
-  const _FilterSheet({
-    required this.categories,
-    required this.countries,
-    required this.onApply,
-    this.selectedCategory,
-    this.selectedCountry,
-  });
-
-  @override
-  State<_FilterSheet> createState() => _FilterSheetState();
-}
-
-class _FilterSheetState extends State<_FilterSheet> {
-  String? _category;
-  String? _country;
-  final _countrySearchController = TextEditingController();
-  String _countryQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _category = widget.selectedCategory;
-    _country = widget.selectedCountry;
-  }
-
-  @override
-  void dispose() {
-    _countrySearchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      minChildSize: 0.4,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 16.h),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.textMuted,
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  'Filter Channels',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  'Category',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _filterChip(
-                      'All',
-                      _category == null,
-                      () => setState(() => _category = null),
-                    ),
-                    ...widget.categories.map(
-                      (c) => _filterChip(
-                        c,
-                        _category == c,
-                        () => setState(() => _category = c),
-                      ),
-                    ),
-                  ],
-                ),
-                if (widget.countries.isNotEmpty) ...[
-                  SizedBox(height: 20.h),
-                  Row(
-                    children: [
-                      Text(
-                        'Country',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${widget.countries.length} countries',
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceLight,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: TextField(
-                      controller: _countrySearchController,
-                      style: TextStyle(color: Colors.white, fontSize: 13.sp),
-                      decoration: InputDecoration(
-                        hintText: 'Search countries...',
-                        hintStyle: TextStyle(
-                          color: AppColors.textMuted.withValues(alpha: 0.7),
-                          fontSize: 13.sp,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: AppColors.textMuted,
-                          size: 18.sp,
-                        ),
-                        suffixIcon: _countryQuery.isNotEmpty
-                            ? GestureDetector(
-                                onTap: () {
-                                  _countrySearchController.clear();
-                                  setState(() => _countryQuery = '');
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.all(12.w),
-                                  child: Icon(
-                                    Icons.clear,
-                                    color: AppColors.textMuted,
-                                    size: 18.sp,
-                                  ),
-                                ),
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 4.w,
-                          vertical: 10.h,
-                        ),
-                      ),
-                      onChanged: (v) =>
-                          setState(() => _countryQuery = v.toLowerCase()),
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _filteredCountries.length + 1,
-                    separatorBuilder: (_, _) => SizedBox(height: 4.h),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return _countryChip(
-                          'All Countries',
-                          _country == null,
-                          () => setState(() => _country = null),
-                        );
-                      }
-                      final country = _filteredCountries[index - 1];
-                      return _countryChip(
-                        country,
-                        _country == country,
-                        () => setState(() => _country = country),
-                      );
-                    },
-                  ),
-                ],
-                SizedBox(height: 24.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => widget.onApply(_category, _country),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Apply Filters',
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _filterChip(String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
-          ),
-        ),
-        child: Text(
-          htmlDecode(label),
-          style: TextStyle(
-            color: selected ? Colors.white : AppColors.textSecondary,
-            fontSize: 13.sp,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<String> get _filteredCountries {
-    if (_countryQuery.isEmpty) return widget.countries;
-    return widget.countries
-        .where((c) => htmlDecode(c).toLowerCase().contains(_countryQuery))
-        .toList();
-  }
-
-  Widget _countryChip(String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: selected ? Colors.white : AppColors.textMuted,
-              size: 18.sp,
-            ),
-            SizedBox(width: 10.w),
-            Text(
-              htmlDecode(label),
-              style: TextStyle(
-                color: selected ? Colors.white : AppColors.textSecondary,
-                fontSize: 13.sp,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
