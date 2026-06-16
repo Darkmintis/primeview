@@ -68,6 +68,246 @@ class _SearchViewState extends ConsumerState<SearchView> {
     );
   }
 
+  void _showCategoryPicker() {
+    final channels = ref.read(channelsProvider);
+    final allCategories =
+        channels
+            .map((c) => htmlDecode(c.category ?? ''))
+            .where((c) => c.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+    final filtered = AppConstants.predefinedCategories
+        .where((c) => allCategories.contains(c))
+        .toList();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final current = ref.read(searchProvider).selectedCategory;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.textMuted,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Select Category',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _filterChip('All', current == null, () {
+                    ref.read(searchProvider.notifier).setCategoryFilter(null);
+                    Navigator.of(ctx).pop();
+                  }),
+                  ...filtered.map(
+                    (c) => _filterChip(c, current == c, () {
+                      ref.read(searchProvider.notifier).setCategoryFilter(c);
+                      Navigator.of(ctx).pop();
+                    }),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCountryPicker() {
+    final channels = ref.read(channelsProvider);
+    final allCountries =
+        channels
+            .map((c) => c.country)
+            .where((c) => c != null && c.isNotEmpty)
+            .map((c) => c!)
+            .toSet()
+            .toList()
+          ..sort();
+    var countryQuery = '';
+    final countryController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final current = ref.read(searchProvider).selectedCountry;
+            final filtered = countryQuery.isEmpty
+                ? allCountries
+                : allCountries
+                      .where(
+                        (c) =>
+                            htmlDecode(c).toLowerCase().contains(countryQuery),
+                      )
+                      .toList();
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 12,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.textMuted,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Select Country',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceLight,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextField(
+                      controller: countryController,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: 'Search countries...',
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted.withValues(alpha: 0.7),
+                          fontSize: 13,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textMuted,
+                          size: 18,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 10,
+                        ),
+                      ),
+                      onChanged: (v) =>
+                          setSheetState(() => countryQuery = v.toLowerCase()),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        _countryChip('All Countries', current == null, () {
+                          ref
+                              .read(searchProvider.notifier)
+                              .setCountryFilter(null);
+                          Navigator.of(ctx).pop();
+                        }),
+                        ...filtered.map(
+                          (c) => _countryChip(c, current == c, () {
+                            ref
+                                .read(searchProvider.notifier)
+                                .setCountryFilter(c);
+                            Navigator.of(ctx).pop();
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(() => countryController.dispose());
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : AppColors.surfaceLight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isActive ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? AppColors.primary : AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+            if (isActive) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.close, size: 12, color: AppColors.primary),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final searchResults = ref.watch(searchResultsProvider);
@@ -96,19 +336,14 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     color: AppColors.surfaceLight,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: hasFilters
-                          ? AppColors.primary
-                          : AppColors.divider,
+                      color: hasFilters ? AppColors.primary : AppColors.divider,
                       width: hasFilters ? 1.5 : 1,
                     ),
                   ),
                   child: TextField(
                     controller: _searchController,
                     focusNode: _focusNode,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                     decoration: InputDecoration(
                       hintText: 'Search channels...',
                       hintStyle: TextStyle(
@@ -141,7 +376,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
                           GestureDetector(
                             onTap: _showFilterSheet,
                             child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 12,
+                              ),
                               child: Icon(
                                 Icons.filter_list,
                                 color: AppColors.textMuted,
@@ -153,12 +391,13 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             GestureDetector(
                               onTap: () {
                                 _searchController.clear();
-                                ref
-                                    .read(searchProvider.notifier)
-                                    .setQuery('');
+                                ref.read(searchProvider.notifier).setQuery('');
                               },
                               child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 12,
+                                ),
                                 child: Icon(
                                   Icons.clear,
                                   color: AppColors.textMuted,
@@ -170,46 +409,39 @@ class _SearchViewState extends ConsumerState<SearchView> {
                         ],
                       ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 14,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onChanged: (value) {
-                      ref
-                          .read(searchProvider.notifier)
-                          .setQuery(value);
+                      ref.read(searchProvider.notifier).setQuery(value);
                     },
                   ),
                 ),
               ),
             ),
           ),
-          if (hasFilters)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.filter_alt,
-                      color: AppColors.primary,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        [if (searchState.selectedCategory != null) searchState.selectedCategory, if (searchState.selectedCountry != null) searchState.selectedCountry].join(', '),
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 12,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+              child: Row(
+                children: [
+                  _buildFilterChip(
+                    label: searchState.selectedCategory ?? 'Category',
+                    icon: Icons.category,
+                    isActive: searchState.selectedCategory != null,
+                    onTap: () => _showCategoryPicker(),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildFilterChip(
+                    label: searchState.selectedCountry ?? 'Country',
+                    icon: Icons.flag,
+                    isActive: searchState.selectedCountry != null,
+                    onTap: () => _showCountryPicker(),
+                  ),
+                  const Spacer(),
+                  if (hasFilters)
                     GestureDetector(
-                      onTap: () {
-                        ref.read(searchProvider.notifier).clearFilters();
-                      },
+                      onTap: () =>
+                          ref.read(searchProvider.notifier).clearFilters(),
                       child: const Text(
                         'Clear',
                         style: TextStyle(
@@ -219,10 +451,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
                         ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
+          ),
           if (searchState.query.isNotEmpty || searchResults.isNotEmpty)
             SliverToBoxAdapter(
               child: Padding(
@@ -309,6 +541,64 @@ class _SearchViewState extends ConsumerState<SearchView> {
               },
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _filterChip(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Text(
+          htmlDecode(label),
+          style: TextStyle(
+            color: selected ? Colors.white : AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _countryChip(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: selected ? Colors.white : AppColors.textMuted,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              htmlDecode(label),
+              style: TextStyle(
+                color: selected ? Colors.white : AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -402,12 +692,16 @@ class _FilterSheetState extends State<_FilterSheet> {
                   runSpacing: 8,
                   children: [
                     _filterChip(
-                        'All', _category == null,
-                        () => setState(() => _category = null)),
+                      'All',
+                      _category == null,
+                      () => setState(() => _category = null),
+                    ),
                     ...widget.categories.map(
                       (c) => _filterChip(
-                          c, _category == c,
-                          () => setState(() => _category = c)),
+                        c,
+                        _category == c,
+                        () => setState(() => _category = c),
+                      ),
                     ),
                   ],
                 ),
@@ -441,10 +735,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     ),
                     child: TextField(
                       controller: _countrySearchController,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
                       decoration: InputDecoration(
                         hintText: 'Search countries...',
                         hintStyle: TextStyle(
@@ -478,7 +769,8 @@ class _FilterSheetState extends State<_FilterSheet> {
                           vertical: 10,
                         ),
                       ),
-                      onChanged: (v) => setState(() => _countryQuery = v.toLowerCase()),
+                      onChanged: (v) =>
+                          setState(() => _countryQuery = v.toLowerCase()),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -489,8 +781,11 @@ class _FilterSheetState extends State<_FilterSheet> {
                     separatorBuilder: (_, _) => const SizedBox(height: 4),
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        return _countryChip('All Countries', _country == null,
-                            () => setState(() => _country = null));
+                        return _countryChip(
+                          'All Countries',
+                          _country == null,
+                          () => setState(() => _country = null),
+                        );
                       }
                       final country = _filteredCountries[index - 1];
                       return _countryChip(
@@ -575,9 +870,7 @@ class _FilterSheetState extends State<_FilterSheet> {
         child: Row(
           children: [
             Icon(
-              selected
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_off,
+              selected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: selected ? Colors.white : AppColors.textMuted,
               size: 18,
             ),
