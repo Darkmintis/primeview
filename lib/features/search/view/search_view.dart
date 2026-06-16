@@ -336,12 +336,20 @@ class _FilterSheet extends StatefulWidget {
 class _FilterSheetState extends State<_FilterSheet> {
   String? _category;
   String? _country;
+  final _countrySearchController = TextEditingController();
+  String _countryQuery = '';
 
   @override
   void initState() {
     super.initState();
     _category = widget.selectedCategory;
     _country = widget.selectedCountry;
+  }
+
+  @override
+  void dispose() {
+    _countrySearchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -405,26 +413,86 @@ class _FilterSheetState extends State<_FilterSheet> {
                 ),
                 if (widget.countries.isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  const Text(
-                    'Country',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                  Row(
+                    children: [
+                      const Text(
+                        'Country',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${widget.countries.length} countries',
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceLight,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextField(
+                      controller: _countrySearchController,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Search countries...',
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted.withValues(alpha: 0.7),
+                          fontSize: 13,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textMuted,
+                          size: 18,
+                        ),
+                        suffixIcon: _countryQuery.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _countrySearchController.clear();
+                                  setState(() => _countryQuery = '');
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Icon(
+                                    Icons.clear,
+                                    color: AppColors.textMuted,
+                                    size: 18,
+                                  ),
+                                ),
+                              )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 10,
+                        ),
+                      ),
+                      onChanged: (v) => setState(() => _countryQuery = v.toLowerCase()),
                     ),
                   ),
                   const SizedBox(height: 8),
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.countries.length + 1,
+                    itemCount: _filteredCountries.length + 1,
                     separatorBuilder: (_, _) => const SizedBox(height: 4),
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return _countryChip('All Countries', _country == null,
                             () => setState(() => _country = null));
                       }
-                      final country = widget.countries[index - 1];
+                      final country = _filteredCountries[index - 1];
                       return _countryChip(
                         country,
                         _country == country,
@@ -483,6 +551,13 @@ class _FilterSheetState extends State<_FilterSheet> {
         ),
       ),
     );
+  }
+
+  List<String> get _filteredCountries {
+    if (_countryQuery.isEmpty) return widget.countries;
+    return widget.countries
+        .where((c) => htmlDecode(c).toLowerCase().contains(_countryQuery))
+        .toList();
   }
 
   Widget _countryChip(String label, bool selected, VoidCallback onTap) {
