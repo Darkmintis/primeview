@@ -22,6 +22,7 @@ class PlayerView extends ConsumerStatefulWidget {
 class _PlayerViewState extends ConsumerState<PlayerView>
     with WidgetsBindingObserver {
   ChannelModel? _currentChannel;
+  bool _isInPip = false;
 
   @override
   void initState() {
@@ -29,19 +30,27 @@ class _PlayerViewState extends ConsumerState<PlayerView>
     _currentChannel = widget.channel;
     WidgetsBinding.instance.addObserver(this);
     WakelockPlus.enable();
-    _setLandscapePreferred();
+    _setOrientations(true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(playerViewModelProvider.notifier).initialize(_currentChannel!.url);
       saveLastWatchedChannel(_currentChannel!);
     });
   }
 
-  void _setLandscapePreferred() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.portraitUp,
-    ]);
+  void _setOrientations(bool allowLandscape) {
+    if (allowLandscape) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitUp,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
   }
 
   @override
@@ -65,8 +74,11 @@ class _PlayerViewState extends ConsumerState<PlayerView>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      ref.read(playerViewModelProvider.notifier).pause();
+      if (!_isInPip) {
+        ref.read(playerViewModelProvider.notifier).pause();
+      }
     } else if (state == AppLifecycleState.resumed) {
+      _isInPip = false;
       ref.read(playerViewModelProvider.notifier).play();
     }
   }
@@ -84,8 +96,17 @@ class _PlayerViewState extends ConsumerState<PlayerView>
 
     if (playerState.isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
     }
 
     return Scaffold(
@@ -136,6 +157,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
                 channelName: channel.name,
                 currentChannel: channel,
                 onChannelChanged: _switchChannel,
+                onPipEnter: () => setState(() => _isInPip = true),
               ),
             ],
           );

@@ -14,12 +14,14 @@ class VideoControls extends ConsumerStatefulWidget {
   final String channelName;
   final ChannelModel currentChannel;
   final ValueChanged<ChannelModel> onChannelChanged;
+  final VoidCallback? onPipEnter;
 
   const VideoControls({
     super.key,
     required this.channelName,
     required this.currentChannel,
     required this.onChannelChanged,
+    this.onPipEnter,
   });
 
   @override
@@ -302,6 +304,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   }
 
   void _enterPip() {
+    widget.onPipEnter?.call();
     PlatformChannels.enterPip();
   }
 
@@ -442,156 +445,176 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   void _openChannelSwitcher() {
     _hideTimer?.cancel();
     final channels = ref.read(channelsProvider);
-    var searchQuery = '';
-    final searchController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            final filtered = searchQuery.isEmpty
-                ? channels
-                : channels
-                    .where((c) => htmlDecode(c.name)
-                        .toLowerCase()
-                        .contains(searchQuery))
-                    .toList();
-
-            return Container(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(24.r)),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                    left: 16.w,
-                    right: 16.w,
-                    top: 12.h,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color: AppColors.textMuted,
-                          borderRadius: BorderRadius.circular(2.r),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    Row(
-                      children: [
-                        Container(
-                          width: 36.w,
-                          height: 36.h,
-                          decoration: BoxDecoration(
-                            color:
-                                AppColors.primary.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Icon(Icons.list,
-                              color: AppColors.primary, size: 20.sp),
-                        ),
-                        SizedBox(width: 12.w),
-                        Text('Switch Channel',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold)),
-                        Spacer(),
-                        Text('${filtered.length}',
-                            style: TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14.sp)),
-                      ],
-                    ),
-                    SizedBox(height: 12.h),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceLight,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: AppColors.divider),
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 14.sp),
-                        decoration: InputDecoration(
-                          hintText: 'Search channels...',
-                          hintStyle: TextStyle(
-                              color: AppColors.textMuted
-                                  .withValues(alpha: 0.7),
-                              fontSize: 14.sp),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.all(12.w),
-                            child: Icon(Icons.search,
-                                color: AppColors.textMuted, size: 20.sp),
-                          ),
-                          suffixIcon: searchQuery.isNotEmpty
-                              ? GestureDetector(
-                                  onTap: () {
-                                    searchController.clear();
-                                    setSheetState(
-                                        () => searchQuery = '');
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.all(12.w),
-                                    child: Icon(Icons.clear,
-                                        color: AppColors.textMuted,
-                                        size: 18.sp),
-                                  ),
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 4.w, vertical: 12.h),
-                        ),
-                        onChanged: (v) => setSheetState(
-                            () => searchQuery = v.toLowerCase()),
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    Expanded(
-                      child: filtered.isEmpty
-                          ? Center(
-                              child: Text('No channels found',
-                                  style: TextStyle(
-                                      color: AppColors.textMuted,
-                                      fontSize: 14.sp)),
-                            )
-                          : ListView.builder(
-                              itemCount: filtered.length,
-                              itemBuilder: (ctx, index) {
-                                final channel = filtered[index];
-                                final isCurrent = channel.id ==
-                                    widget.currentChannel.id;
-                                return _buildChannelItem(
-                                    channel, isCurrent, index);
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+        return _ChannelSwitcherSheet(
+          channels: channels,
+          currentChannelId: widget.currentChannel.id,
+          onChannelChanged: (channel) {
+            Navigator.of(ctx).pop();
+            widget.onChannelChanged(channel);
           },
         );
       },
-    ).whenComplete(() => searchController.dispose());
+    );
   }
 
-  Widget _buildChannelItem(ChannelModel channel, bool isCurrent, int index) {
+}
+
+class _ChannelSwitcherSheet extends StatefulWidget {
+  final List<ChannelModel> channels;
+  final String currentChannelId;
+  final ValueChanged<ChannelModel> onChannelChanged;
+
+  const _ChannelSwitcherSheet({
+    required this.channels,
+    required this.currentChannelId,
+    required this.onChannelChanged,
+  });
+
+  @override
+  State<_ChannelSwitcherSheet> createState() => _ChannelSwitcherSheetState();
+}
+
+class _ChannelSwitcherSheetState extends State<_ChannelSwitcherSheet> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = _searchQuery.isEmpty
+        ? widget.channels
+        : widget.channels
+            .where((c) =>
+                htmlDecode(c.name).toLowerCase().contains(_searchQuery))
+            .toList();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 16.w,
+          right: 16.w,
+          top: 12.h,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: AppColors.textMuted,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+            Row(
+              children: [
+                Container(
+                  width: 36.w,
+                  height: 36.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(Icons.list, color: AppColors.primary, size: 20.sp),
+                ),
+                SizedBox(width: 12.w),
+                Text('Switch Channel',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold)),
+                Spacer(),
+                Text('${filtered.length}',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 14.sp)),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: TextField(
+                controller: _searchController,
+                style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                decoration: InputDecoration(
+                  hintText: 'Search channels...',
+                  hintStyle: TextStyle(
+                      color: AppColors.textMuted.withValues(alpha: 0.7),
+                      fontSize: 14.sp),
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Icon(Icons.search,
+                        color: AppColors.textMuted, size: 20.sp),
+                  ),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(12.w),
+                            child: Icon(Icons.clear,
+                                color: AppColors.textMuted, size: 18.sp),
+                          ),
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 4.w, vertical: 12.h),
+                ),
+                onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+              ),
+            ),
+            SizedBox(height: 12.h),
+            Expanded(
+              child: filtered.isEmpty
+                  ? Center(
+                      child: Text('No channels found',
+                          style:
+                              TextStyle(color: AppColors.textMuted, fontSize: 14.sp)),
+                    )
+                  : ListView.builder(
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final channel = filtered[index];
+                        final isCurrent =
+                            channel.id == widget.currentChannelId;
+                        return _buildChannelItem(channel, isCurrent);
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChannelItem(ChannelModel channel, bool isCurrent) {
     return GestureDetector(
       onTap: () {
         if (!isCurrent) {
-          Navigator.of(context).pop();
           widget.onChannelChanged(channel);
         }
       },
@@ -653,12 +676,11 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (channel.category != null &&
-                      channel.category!.isNotEmpty)
+                  if (channel.category != null && channel.category!.isNotEmpty)
                     Text(
                       htmlDecode(channel.category!),
-                      style: TextStyle(
-                          color: AppColors.textMuted, fontSize: 11.sp),
+                      style:
+                          TextStyle(color: AppColors.textMuted, fontSize: 11.sp),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -667,8 +689,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             ),
             if (isCurrent)
               Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
                   gradient: AppColors.premiumGradient,
                   borderRadius: BorderRadius.circular(4.r),

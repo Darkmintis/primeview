@@ -17,7 +17,8 @@ class AppScaffold extends ConsumerWidget {
 
     final screens = <Widget>[
       HomeView(
-        onSearchTap: () => ref.read(currentTabProvider.notifier).state = TabIndex.search,
+        onSearchTap: () =>
+            ref.read(currentTabProvider.notifier).state = TabIndex.search,
       ),
       const SearchView(),
       const FavoritesView(),
@@ -30,40 +31,115 @@ class AppScaffold extends ConsumerWidget {
         children: screens,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
           border: Border(
-            top: BorderSide(color: AppColors.divider, width: 0.5),
+            top: BorderSide(
+              color: AppColors.divider.withValues(alpha: 0.3),
+              width: 0.5,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.05),
+              blurRadius: 12.r,
+              spreadRadius: 0,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(
+                _navItems.length,
+                (index) => _NavBarItem(
+                  icon: _navItems[index].icon,
+                  activeIcon: _navItems[index].activeIcon,
+                  label: _navItems[index].label,
+                  isSelected: currentIndex.index == index,
+                  onTap: () => ref
+                      .read(currentTabProvider.notifier)
+                      .state = TabIndex.values[index],
+                ),
+              ),
+            ),
           ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex.index,
-          onTap: (index) => ref.read(currentTabProvider.notifier).state = TabIndex.values[index],
-          backgroundColor: AppColors.surface,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 12.sp,
-          unselectedFontSize: 12.sp,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
+      ),
+    );
+  }
+}
+
+const _navItems = [
+  _NavItem(Icons.home_outlined, Icons.home, 'Home'),
+  _NavItem(Icons.search_outlined, Icons.search, 'Search'),
+  _NavItem(Icons.favorite_outline, Icons.favorite, 'Favorites'),
+  _NavItem(Icons.settings_outlined, Icons.settings, 'Settings'),
+];
+
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItem(this.icon, this.activeIcon, this.label);
+}
+
+class _NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavBarItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: isSelected
+                    ? [AppColors.primary, AppColors.primaryLight]
+                    : [AppColors.textMuted, AppColors.textMuted],
+              ).createShader(bounds),
+              child: Icon(
+                isSelected ? activeIcon : icon,
+                color: Colors.white,
+                size: 24.sp,
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_outline),
-              activeIcon: Icon(Icons.favorite),
-              label: 'Favorites',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
-              label: 'Settings',
+            SizedBox(height: 2.h),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? AppColors.primary : AppColors.textMuted,
+                fontSize: 10.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
             ),
           ],
         ),
