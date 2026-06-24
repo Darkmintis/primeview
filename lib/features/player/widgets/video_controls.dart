@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/html_utils.dart';
+import '../../../core/utils/platform_channels.dart';
 import '../../playlist/viewmodels/playlist_viewmodel.dart';
 import '../viewmodels/player_viewmodel.dart';
 
@@ -265,48 +266,84 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   }
 
   Widget _buildVolumeControl(PlayerState playerState) {
-    return GestureDetector(
-      onTap: () => ref.read(playerViewModelProvider.notifier).toggleMute(),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              playerState.isMuted || playerState.volume == 0
-                  ? Icons.volume_off
-                  : playerState.volume < 0.5
-                      ? Icons.volume_down
-                      : Icons.volume_up,
-              color: Colors.white,
-              size: 22.sp,
-            ),
-            SizedBox(width: 4.w),
-            SizedBox(
-              width: 60.w,
-              child: SliderTheme(
-                data: SliderThemeData(
-                  trackHeight: 3.h,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
-                  activeTrackColor: AppColors.primary,
-                  inactiveTrackColor: Colors.white24,
-                  thumbColor: Colors.white,
-                ),
-                child: Slider(
-                  value: playerState.isMuted ? 0 : playerState.volume,
-                  onChanged: (v) {
-                    _hideTimer?.cancel();
-                    ref.read(playerViewModelProvider.notifier).setVolume(v);
-                  },
-                  onChangeEnd: (_) => _startHideTimer(),
-                ),
-              ),
-            ),
-          ],
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildIconButton(
+          Icons.picture_in_picture_alt,
+          () => _enterPip(),
         ),
+        SizedBox(width: 4.w),
+        _buildIconButton(
+          playerState.isFullScreen
+              ? Icons.fullscreen_exit
+              : Icons.fullscreen,
+          () => ref.read(playerViewModelProvider.notifier).toggleFullScreen(),
+        ),
+        SizedBox(width: 4.w),
+        GestureDetector(
+          onTap: () => ref.read(playerViewModelProvider.notifier).toggleMute(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  playerState.isMuted || playerState.volume == 0
+                      ? Icons.volume_off
+                      : playerState.volume < 0.5
+                          ? Icons.volume_down
+                          : Icons.volume_up,
+                  color: Colors.white,
+                  size: 22.sp,
+                ),
+                SizedBox(width: 2.w),
+                SizedBox(
+                  width: 56.w,
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      trackHeight: 3.h,
+                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                      overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
+                      activeTrackColor: AppColors.primary,
+                      inactiveTrackColor: Colors.white24,
+                      thumbColor: Colors.white,
+                    ),
+                    child: Slider(
+                      value: playerState.isMuted ? 0 : playerState.volume,
+                      onChanged: (v) {
+                        _hideTimer?.cancel();
+                        ref.read(playerViewModelProvider.notifier).setVolume(v);
+                      },
+                      onChangeEnd: (_) => _startHideTimer(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 34.w,
+        height: 34.h,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(icon, color: Colors.white, size: 20.sp),
       ),
     );
+  }
+
+  void _enterPip() {
+    PlatformChannels.enterPip();
   }
 
   Widget _buildCenterControls(PlayerState playerState) {

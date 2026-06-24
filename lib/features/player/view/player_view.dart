@@ -8,6 +8,7 @@ import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../viewmodels/player_viewmodel.dart';
 import '../widgets/video_controls.dart';
+import '../../home/viewmodels/home_viewmodel.dart';
 
 class PlayerView extends ConsumerStatefulWidget {
   final ChannelModel channel;
@@ -31,6 +32,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
     _setLandscapePreferred();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(playerViewModelProvider.notifier).initialize(_currentChannel!.url);
+      saveLastWatchedChannel(_currentChannel!);
     });
   }
 
@@ -72,6 +74,7 @@ class _PlayerViewState extends ConsumerState<PlayerView>
   void _switchChannel(ChannelModel channel) {
     setState(() => _currentChannel = channel);
     ref.read(playerViewModelProvider.notifier).switchChannel(channel.url);
+    saveLastWatchedChannel(channel);
   }
 
   @override
@@ -123,9 +126,11 @@ class _PlayerViewState extends ConsumerState<PlayerView>
                   ),
                 )
               else
-                AspectRatio(
-                  aspectRatio: controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
                 ),
               VideoControls(
                 channelName: channel.name,

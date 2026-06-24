@@ -34,7 +34,7 @@ class SearchService {
 
     if (country != null && country.isNotEmpty) {
       filtered = filtered
-          .where((c) => c.country == country)
+          .where((c) => htmlDecode(c.country ?? '') == htmlDecode(country))
           .toList();
     }
 

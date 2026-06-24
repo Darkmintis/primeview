@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/channel_model.dart';
 import '../../../core/utils/html_utils.dart';
@@ -70,5 +72,37 @@ final channelRowsProvider = Provider<Map<String, List<ChannelModel>>>((ref) {
 final featuredChannelProvider = Provider<ChannelModel?>((ref) {
   final channels = ref.watch(channelsProvider);
   if (channels.isEmpty) return null;
+
+  try {
+    final box = Hive.box(AppConstants.hiveBoxName);
+    final lastWatchedJson = box.get('last_watched_channel');
+    if (lastWatchedJson != null) {
+      final data = jsonDecode(lastWatchedJson) as Map<String, dynamic>;
+      final lastId = data['id'] as String?;
+      if (lastId != null) {
+        final match = channels.where((c) => c.id == lastId).firstOrNull;
+        if (match != null) return match;
+      }
+    }
+  } catch (_) {}
+
   return channels.first;
 });
+
+void saveLastWatchedChannel(ChannelModel channel) {
+  try {
+    final box = Hive.box(AppConstants.hiveBoxName);
+    box.put(
+      'last_watched_channel',
+      jsonEncode({
+        'id': channel.id,
+        'name': channel.name,
+        'url': channel.url,
+        'logo': channel.logo,
+        'category': channel.category,
+        'language': channel.language,
+        'country': channel.country,
+      }),
+    );
+  } catch (_) {}
+}
