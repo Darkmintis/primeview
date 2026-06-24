@@ -96,14 +96,13 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             final notifier = ref.read(playerViewModelProvider.notifier);
             if (dx < width / 3) {
               notifier.seekBackward(10);
-              _showSeekFeedback(-10);
             } else if (dx > width * 2 / 3) {
               notifier.seekForward(10);
-              _showSeekFeedback(10);
             }
           },
           onVerticalDragEnd: (details) {
-            if (details.primaryVelocity != null && details.primaryVelocity! < -200) {
+            if (details.primaryVelocity != null &&
+                details.primaryVelocity! < -200) {
               _openChannelSwitcher();
             }
           },
@@ -135,36 +134,6 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: _buildTopBar(context),
-            ),
-          ),
-        if (show)
-          Positioned(
-            left: 16.w,
-            top: 0,
-            bottom: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Center(
-                child: _buildSideButton(
-                  Icons.keyboard_arrow_up,
-                  () => _switchRelative(-1),
-                ),
-              ),
-            ),
-          ),
-        if (show)
-          Positioned(
-            right: 16.w,
-            top: 0,
-            bottom: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Center(
-                child: _buildSideButton(
-                  Icons.keyboard_arrow_down,
-                  () => _switchRelative(1),
-                ),
-              ),
             ),
           ),
         if (show)
@@ -204,21 +173,6 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildSideButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44.w,
-        height: 80.h,
-        decoration: BoxDecoration(
-          color: Colors.black26,
-          borderRadius: BorderRadius.circular(22.r),
-        ),
-        child: Icon(icon, color: Colors.white70, size: 28.sp),
-      ),
     );
   }
 
@@ -282,7 +236,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         ),
         SizedBox(width: 4.w),
         GestureDetector(
-          onTap: () => ref.read(playerViewModelProvider.notifier).toggleMute(),
+          onTap: () =>
+              ref.read(playerViewModelProvider.notifier).toggleMute(),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
             child: Row(
@@ -303,8 +258,10 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                   child: SliderTheme(
                     data: SliderThemeData(
                       trackHeight: 3.h,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-                      overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
+                      thumbShape:
+                          RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                      overlayShape:
+                          RoundSliderOverlayShape(overlayRadius: 14.r),
                       activeTrackColor: AppColors.primary,
                       inactiveTrackColor: Colors.white24,
                       thumbColor: Colors.white,
@@ -313,7 +270,9 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                       value: playerState.isMuted ? 0 : playerState.volume,
                       onChanged: (v) {
                         _hideTimer?.cancel();
-                        ref.read(playerViewModelProvider.notifier).setVolume(v);
+                        ref
+                            .read(playerViewModelProvider.notifier)
+                            .setVolume(v);
                       },
                       onChangeEnd: (_) => _startHideTimer(),
                     ),
@@ -349,7 +308,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   Widget _buildCenterControls(PlayerState playerState) {
     return Center(
       child: GestureDetector(
-        onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
+        onTap: () =>
+            ref.read(playerViewModelProvider.notifier).togglePlayPause(),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: 80.w,
@@ -406,7 +366,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
               GestureDetector(
                 onTap: () => _switchRelative(-1),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: Colors.black45,
                     borderRadius: BorderRadius.circular(20.r),
@@ -414,12 +375,12 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.skip_previous, color: Colors.white70, size: 18.sp),
+                      Icon(Icons.skip_previous,
+                          color: Colors.white70, size: 18.sp),
                       SizedBox(width: 4.w),
-                      Text(
-                        'Prev',
-                        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
-                      ),
+                      Text('Prev',
+                          style: TextStyle(
+                              color: Colors.white70, fontSize: 12.sp)),
                     ],
                   ),
                 ),
@@ -428,20 +389,22 @@ class _VideoControlsState extends ConsumerState<VideoControls>
               GestureDetector(
                 onTap: _openChannelSwitcher,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                    border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.4)),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.list, color: AppColors.primaryLight, size: 18.sp),
+                      Icon(Icons.list,
+                          color: AppColors.primaryLight, size: 18.sp),
                       SizedBox(width: 6.w),
-                      Text(
-                        'Channels',
-                        style: TextStyle(color: AppColors.primaryLight, fontSize: 12.sp),
-                      ),
+                      Text('Channels',
+                          style: TextStyle(
+                              color: AppColors.primaryLight, fontSize: 12.sp)),
                     ],
                   ),
                 ),
@@ -450,7 +413,8 @@ class _VideoControlsState extends ConsumerState<VideoControls>
               GestureDetector(
                 onTap: () => _switchRelative(1),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: Colors.black45,
                     borderRadius: BorderRadius.circular(20.r),
@@ -458,12 +422,12 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                   ),
                   child: Row(
                     children: [
-                      Text(
-                        'Next',
-                        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
-                      ),
+                      Text('Next',
+                          style: TextStyle(
+                              color: Colors.white70, fontSize: 12.sp)),
                       SizedBox(width: 4.w),
-                      Icon(Icons.skip_next, color: Colors.white70, size: 18.sp),
+                      Icon(Icons.skip_next,
+                          color: Colors.white70, size: 18.sp),
                     ],
                   ),
                 ),
@@ -475,35 +439,41 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     );
   }
 
-  void _showSeekFeedback(int seconds) {
-  }
-
   void _openChannelSwitcher() {
     _hideTimer?.cancel();
     final channels = ref.read(channelsProvider);
-    final currentIdx = channels.indexWhere(
-      (c) => c.id == widget.currentChannel.id,
-    );
+    var searchQuery = '';
+    final searchController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          ),
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            minChildSize: 0.3,
-            maxChildSize: 0.85,
-            expand: false,
-            builder: (ctx, scrollController) {
-              return Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 16.h),
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = searchQuery.isEmpty
+                ? channels
+                : channels
+                    .where((c) => htmlDecode(c.name)
+                        .toLowerCase()
+                        .contains(searchQuery))
+                    .toList();
+
+            return Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(24.r)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: 16.w,
+                    right: 16.w,
+                    top: 12.h,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 16),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Center(
                       child: Container(
@@ -522,54 +492,99 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                           width: 36.w,
                           height: 36.h,
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.15),
+                            color:
+                                AppColors.primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10.r),
                           ),
-                          child: Icon(
-                            Icons.list,
-                            color: AppColors.primary,
-                            size: 20.sp,
-                          ),
+                          child: Icon(Icons.list,
+                              color: AppColors.primary, size: 20.sp),
                         ),
                         SizedBox(width: 12.w),
-                        Text(
-                          'Switch Channel',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${channels.length}',
-                          style: TextStyle(
-                            color: AppColors.textMuted,
-                            fontSize: 14.sp,
-                          ),
-                        ),
+                        Text('Switch Channel',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold)),
+                        Spacer(),
+                        Text('${filtered.length}',
+                            style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 14.sp)),
                       ],
                     ),
                     SizedBox(height: 12.h),
-                    Expanded(
-                      child: ListView.builder(
-                        controller: scrollController,
-                        itemCount: channels.length,
-                        itemBuilder: (ctx, index) {
-                          final channel = channels[index];
-                          final isCurrent = index == currentIdx;
-                          return _buildChannelItem(channel, isCurrent, index);
-                        },
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceLight,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: AppColors.divider),
                       ),
+                      child: TextField(
+                        controller: searchController,
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 14.sp),
+                        decoration: InputDecoration(
+                          hintText: 'Search channels...',
+                          hintStyle: TextStyle(
+                              color: AppColors.textMuted
+                                  .withValues(alpha: 0.7),
+                              fontSize: 14.sp),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(12.w),
+                            child: Icon(Icons.search,
+                                color: AppColors.textMuted, size: 20.sp),
+                          ),
+                          suffixIcon: searchQuery.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    searchController.clear();
+                                    setSheetState(
+                                        () => searchQuery = '');
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12.w),
+                                    child: Icon(Icons.clear,
+                                        color: AppColors.textMuted,
+                                        size: 18.sp),
+                                  ),
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 4.w, vertical: 12.h),
+                        ),
+                        onChanged: (v) => setSheetState(
+                            () => searchQuery = v.toLowerCase()),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Expanded(
+                      child: filtered.isEmpty
+                          ? Center(
+                              child: Text('No channels found',
+                                  style: TextStyle(
+                                      color: AppColors.textMuted,
+                                      fontSize: 14.sp)),
+                            )
+                          : ListView.builder(
+                              itemCount: filtered.length,
+                              itemBuilder: (ctx, index) {
+                                final channel = filtered[index];
+                                final isCurrent = channel.id ==
+                                    widget.currentChannel.id;
+                                return _buildChannelItem(
+                                    channel, isCurrent, index);
+                              },
+                            ),
                     ),
                   ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
-    );
+    ).whenComplete(() => searchController.dispose());
   }
 
   Widget _buildChannelItem(ChannelModel channel, bool isCurrent, int index) {
@@ -606,16 +621,19 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                         fit: BoxFit.contain,
                         placeholder: (_, _) => Container(
                           color: AppColors.surfaceLight,
-                          child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
+                          child: Icon(Icons.tv,
+                              color: AppColors.textMuted, size: 20.sp),
                         ),
                         errorWidget: (_, _, _) => Container(
                           color: AppColors.surfaceLight,
-                          child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
+                          child: Icon(Icons.tv,
+                              color: AppColors.textMuted, size: 20.sp),
                         ),
                       )
                     : Container(
                         color: AppColors.surfaceLight,
-                        child: Icon(Icons.tv, color: AppColors.textMuted, size: 20.sp),
+                        child: Icon(Icons.tv,
+                            color: AppColors.textMuted, size: 20.sp),
                       ),
               ),
             ),
@@ -629,18 +647,18 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                     style: TextStyle(
                       color: isCurrent ? AppColors.primary : Colors.white,
                       fontSize: 14.sp,
-                      fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight:
+                          isCurrent ? FontWeight.w600 : FontWeight.w400,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (channel.category != null && channel.category!.isNotEmpty)
+                  if (channel.category != null &&
+                      channel.category!.isNotEmpty)
                     Text(
                       htmlDecode(channel.category!),
                       style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 11.sp,
-                      ),
+                          color: AppColors.textMuted, fontSize: 11.sp),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -649,20 +667,18 @@ class _VideoControlsState extends ConsumerState<VideoControls>
             ),
             if (isCurrent)
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
                   gradient: AppColors.premiumGradient,
                   borderRadius: BorderRadius.circular(4.r),
                 ),
-                child: Text(
-                  'LIVE',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 9.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+                child: Text('LIVE',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5)),
               ),
           ],
         ),
