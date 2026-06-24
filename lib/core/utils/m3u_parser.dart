@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 import '../models/channel_model.dart';
 import 'logger.dart';
 import 'html_utils.dart';
+import 'channel_utils.dart';
 
 class M3uParser {
   M3uParser._();
@@ -68,7 +69,7 @@ class M3uParser {
       }
 
       AppLogger.info('Parsed ${channels.length} channels from M3U playlist');
-      return channels;
+      return channels.map((c) => processChannelQuality(c)).toList();
     } catch (e) {
       AppLogger.error('Failed to parse M3U content', error: e);
       return [];

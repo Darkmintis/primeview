@@ -102,6 +102,7 @@ void saveLastWatchedChannel(ChannelModel channel) {
         'category': channel.category,
         'language': channel.language,
         'country': channel.country,
+        'quality': channel.quality,
       }),
     );
   } catch (_) {}

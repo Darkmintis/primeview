@@ -260,8 +260,6 @@ class _ChannelGridCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCountry = channel.country != null && channel.country!.isNotEmpty;
-    final hasLanguage =
-        channel.language != null && channel.language!.isNotEmpty;
 
     return GestureDetector(
       onTap: () {
@@ -388,23 +386,15 @@ class _ChannelGridCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (hasLanguage)
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 4.w,
-                            vertical: 1.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceLight,
-                            borderRadius: BorderRadius.circular(3.r),
-                          ),
-                          child: Text(
-                            channel.language!,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 8.sp,
-                            ),
-                          ),
+                      if (channel.language != null)
+                        Padding(
+                          padding: EdgeInsets.only(left: 4.w),
+                          child: _buildMiniBadge(channel.language!),
+                        ),
+                      if (channel.quality != null)
+                        Padding(
+                          padding: EdgeInsets.only(left: 4.w),
+                          child: _buildMiniBadge(channel.quality!),
                         ),
                     ],
                   ),
@@ -423,6 +413,23 @@ class _ChannelGridCard extends StatelessWidget {
         Icons.live_tv_rounded,
         color: AppColors.textMuted.withValues(alpha: 0.3),
         size: 36.sp,
+      ),
+    );
+  }
+
+  Widget _buildMiniBadge(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(3.r),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 8.sp,
+        ),
       ),
     );
   }

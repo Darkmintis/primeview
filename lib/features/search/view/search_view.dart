@@ -127,6 +127,16 @@ class _SearchViewState extends ConsumerState<SearchView> {
             .toSet()
             .toList()
           ..sort();
+    if (allCountries.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No countries available. Channels may still be loading.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     var countryQuery = '';
     final countryController = TextEditingController();
 
@@ -203,7 +213,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             ),
                             SizedBox(height: 2.h),
                             Text(
-                              '${allCountries.length} countries available',
+                              '${filtered.length} of ${allCountries.length} countries',
                               style: TextStyle(
                                 color: AppColors.textMuted,
                                 fontSize: 12.sp,
@@ -265,29 +275,42 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     ),
                     SizedBox(height: 12.h),
                     Flexible(
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          _buildCountryOption(
-                            'All Countries',
-                            current == null,
-                            () {
-                              ref
-                                  .read(searchProvider.notifier)
-                                  .setCountryFilter(null);
-                              Navigator.of(ctx).pop();
-                            },
-                          ),
-                          ...filtered.map(
-                            (c) => _buildCountryOption(c, current == c, () {
-                              ref
-                                  .read(searchProvider.notifier)
-                                  .setCountryFilter(c);
-                              Navigator.of(ctx).pop();
-                            }),
-                          ),
-                        ],
-                      ),
+                      child: filtered.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24.h),
+                                child: Text(
+                                  'No matching countries',
+                                  style: TextStyle(
+                                    color: AppColors.textMuted,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView(
+                              shrinkWrap: true,
+                              children: [
+                                _buildCountryOption(
+                                  'All Countries',
+                                  current == null,
+                                  () {
+                                    ref
+                                        .read(searchProvider.notifier)
+                                        .setCountryFilter(null);
+                                    Navigator.of(ctx).pop();
+                                  },
+                                ),
+                                ...filtered.map(
+                                  (c) => _buildCountryOption(c, current == c, () {
+                                    ref
+                                        .read(searchProvider.notifier)
+                                        .setCountryFilter(c);
+                                    Navigator.of(ctx).pop();
+                                  }),
+                                ),
+                              ],
+                            ),
                     ),
                   ],
                 ),
@@ -377,6 +400,8 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 fontSize: 14.sp,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

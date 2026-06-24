@@ -38,6 +38,11 @@ class HeroBanner extends ConsumerWidget {
                   Row(
                     children: [
                       _buildCategoryBadge(),
+                      if (channel.quality != null) ...[
+                        SizedBox(width: 8.w),
+                        _buildInfoBadge(channel.quality!,
+                            isQuality: true),
+                      ],
                       if (channel.country != null &&
                           channel.country!.isNotEmpty) ...[
                         SizedBox(width: 8.w),
@@ -151,19 +156,24 @@ class HeroBanner extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoBadge(String text) {
+  Widget _buildInfoBadge(String text, {bool isQuality = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
+        color: isQuality
+            ? AppColors.accent.withValues(alpha: 0.2)
+            : Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4.r),
+        border: isQuality
+            ? Border.all(color: AppColors.accent.withValues(alpha: 0.4))
+            : null,
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: isQuality ? AppColors.accent : Colors.white,
           fontSize: 11.sp,
-          fontWeight: FontWeight.w500,
+          fontWeight: isQuality ? FontWeight.w700 : FontWeight.w500,
         ),
       ),
     );

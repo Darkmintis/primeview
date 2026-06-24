@@ -70,16 +70,20 @@ class ChannelListItem extends ConsumerWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4.h),
-                        Row(
-                          children: [
-                            _buildTag(channel.category ?? 'Uncategorized'),
-                            if (channel.language != null) ...[
-                              SizedBox(width: 6.w),
-                              _buildTag(channel.language!),
-                            ],
-                          ],
-                        ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      _buildTag(channel.category ?? 'Uncategorized'),
+                      if (channel.language != null) ...[
+                        SizedBox(width: 6.w),
+                        _buildTag(channel.language!),
+                      ],
+                      if (channel.quality != null) ...[
+                        SizedBox(width: 6.w),
+                        _buildTag(channel.quality!, isQuality: true),
+                      ],
+                    ],
+                  ),
                       ],
                     ),
                   ),
@@ -115,18 +119,24 @@ class ChannelListItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildTag(String label) {
+  Widget _buildTag(String label, {bool isQuality = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
+        color: isQuality
+            ? AppColors.accent.withValues(alpha: 0.15)
+            : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(4.r),
+        border: isQuality
+            ? Border.all(color: AppColors.accent.withValues(alpha: 0.3))
+            : null,
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: AppColors.textMuted,
+          color: isQuality ? AppColors.accent : AppColors.textMuted,
           fontSize: 11.sp,
+          fontWeight: isQuality ? FontWeight.w600 : FontWeight.w400,
         ),
       ),
     );
