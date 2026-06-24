@@ -3,27 +3,27 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color background = Color(0xFF0B0B1A);
-  static const Color surface = Color(0xFF151528);
-  static const Color surfaceLight = Color(0xFF1F1F3A);
-  static const Color cardBackground = Color(0xFF181830);
-  static const Color primary = Color(0xFF6C5CE7);
-  static const Color primaryDark = Color(0xFF5A4BD1);
-  static const Color primaryLight = Color(0xFF8B7CF7);
-  static const Color accent = Color(0xFFFFD700);
-  static const Color accentLight = Color(0xFFFFE44D);
+  static const Color background = Color(0xFF0A0E1A);
+  static const Color surface = Color(0xFF131725);
+  static const Color surfaceLight = Color(0xFF1C2138);
+  static const Color cardBackground = Color(0xFF161B2E);
+  static const Color primary = Color(0xFF4A6CF7);
+  static const Color primaryDark = Color(0xFF3B5DE7);
+  static const Color primaryLight = Color(0xFF6B89FF);
+  static const Color accent = Color(0xFFF59E0B);
+  static const Color accentLight = Color(0xFFFBBF24);
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B0C8);
-  static const Color textMuted = Color(0xFF707090);
-  static const Color divider = Color(0xFF2A2A48);
-  static const Color success = Color(0xFF00E676);
-  static const Color error = Color(0xFFFF5252);
-  static const Color warning = Color(0xFFFFD740);
-  static const Color favorite = Color(0xFFFFD700);
+  static const Color textSecondary = Color(0xFFB0B8CC);
+  static const Color textMuted = Color(0xFF6B7390);
+  static const Color divider = Color(0xFF252D45);
+  static const Color success = Color(0xFF10B981);
+  static const Color error = Color(0xFFEF4444);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color favorite = Color(0xFFF59E0B);
   static const Color overlay = Color(0x80000000);
 
   static const LinearGradient heroGradient = LinearGradient(
-    colors: [Colors.transparent, Color(0xB00B0B1A)],
+    colors: [Colors.transparent, Color(0xB00A0E1A)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -35,7 +35,7 @@ class AppColors {
   );
 
   static const LinearGradient premiumGradient = LinearGradient(
-    colors: [Color(0xFF6C5CE7), Color(0xFFFFD700)],
+    colors: [Color(0xFF4A6CF7), Color(0xFF6B89FF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

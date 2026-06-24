@@ -22,29 +22,39 @@ class SettingsView extends ConsumerWidget {
             expandedHeight: 120.h,
             pinned: true,
             backgroundColor: AppColors.background,
+            title: Text(
+              'Settings',
+              style: GoogleFonts.playfairDisplay(
+                color: Colors.white,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.only(left: 16.w, bottom: 16.h),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Settings',
-                    style: GoogleFonts.playfairDisplay(
-                      color: Colors.white,
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w700,
+              background: Padding(
+                padding: EdgeInsets.only(left: 16.w, bottom: 48.h),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Settings',
+                      style: GoogleFonts.playfairDisplay(
+                        color: Colors.white,
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    'Customize your experience',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13.sp,
+                    SizedBox(height: 4.h),
+                    Text(
+                      'Customize your experience',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13.sp,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

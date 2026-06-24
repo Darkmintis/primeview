@@ -2,7 +2,7 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'PrimeView';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '0.1.0';
 
   static const String defaultPlaylistUrl = 'https://iptv-org.github.io/iptv/index.m3u';
 
