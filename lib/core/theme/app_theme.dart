@@ -14,7 +14,7 @@ class AppTheme {
       primaryColor: AppColors.primary,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
-        secondary: AppColors.primary,
+        secondary: AppColors.accent,
         surface: AppColors.surface,
         error: AppColors.error,
       ),
@@ -88,6 +88,7 @@ class AppTheme {
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textMuted,
         type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceLight,
@@ -101,7 +102,7 @@ class AppTheme {
         color: AppColors.cardBackground,
         elevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -112,28 +113,33 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surfaceLight,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         hintStyle: const TextStyle(color: AppColors.textMuted),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceLight,
         contentTextStyle: const TextStyle(color: AppColors.textPrimary),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         behavior: SnackBarBehavior.floating,
+      ),
+      tabBarTheme: const TabBarThemeData(
+        labelColor: AppColors.primary,
+        unselectedLabelColor: AppColors.textMuted,
+        indicatorColor: AppColors.primary,
       ),
     );
   }

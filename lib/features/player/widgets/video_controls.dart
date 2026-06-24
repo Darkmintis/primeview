@@ -30,14 +30,13 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   Timer? _hideTimer;
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
-  final bool _controlsLocked = false;
 
   @override
   void initState() {
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 300),
     );
     _fadeAnimation = CurvedAnimation(
       parent: _animController,
@@ -50,7 +49,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
   void _startHideTimer() {
     _hideTimer?.cancel();
     _hideTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted && !_controlsLocked) {
+      if (mounted) {
         ref.read(playerViewModelProvider.notifier).hideControls();
         _animController.reverse();
       }
@@ -90,6 +89,23 @@ class _VideoControlsState extends ConsumerState<VideoControls>
       children: [
         GestureDetector(
           onTap: _onTap,
+          onDoubleTapDown: (details) {
+            final dx = details.localPosition.dx;
+            final width = context.size?.width ?? 1;
+            final notifier = ref.read(playerViewModelProvider.notifier);
+            if (dx < width / 3) {
+              notifier.seekBackward(10);
+              _showSeekFeedback(-10);
+            } else if (dx > width * 2 / 3) {
+              notifier.seekForward(10);
+              _showSeekFeedback(10);
+            }
+          },
+          onVerticalDragEnd: (details) {
+            if (details.primaryVelocity != null && details.primaryVelocity! < -200) {
+              _openChannelSwitcher();
+            }
+          },
         ),
         if (show)
           Positioned.fill(
@@ -99,9 +115,9 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.black54,
+                      Color(0xBB000000),
                       Colors.transparent,
-                      Colors.black54,
+                      Color(0xBB000000),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -122,6 +138,36 @@ class _VideoControlsState extends ConsumerState<VideoControls>
           ),
         if (show)
           Positioned(
+            left: 16.w,
+            top: 0,
+            bottom: 0,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Center(
+                child: _buildSideButton(
+                  Icons.keyboard_arrow_up,
+                  () => _switchRelative(-1),
+                ),
+              ),
+            ),
+          ),
+        if (show)
+          Positioned(
+            right: 16.w,
+            top: 0,
+            bottom: 0,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Center(
+                child: _buildSideButton(
+                  Icons.keyboard_arrow_down,
+                  () => _switchRelative(1),
+                ),
+              ),
+            ),
+          ),
+        if (show)
+          Positioned(
             top: 0,
             left: 0,
             right: 0,
@@ -135,19 +181,64 @@ class _VideoControlsState extends ConsumerState<VideoControls>
           bottom: 0,
           left: 0,
           right: 0,
-          child: _buildChannelSwitcherHandle(),
+          child: _buildBottomBar(playerState),
         ),
         if (!show && !playerState.isPlaying)
-          _buildCenterPlayOverlay(playerState),
+          Center(
+            child: GestureDetector(
+              onTap: _onTap,
+              child: Container(
+                width: 64.w,
+                height: 64.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    width: 2,
+                  ),
+                  color: Colors.black26,
+                ),
+                child: Icon(Icons.play_arrow, color: Colors.white, size: 36.sp),
+              ),
+            ),
+          ),
       ],
     );
   }
 
+  Widget _buildSideButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44.w,
+        height: 80.h,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          borderRadius: BorderRadius.circular(22.r),
+        ),
+        child: Icon(icon, color: Colors.white70, size: 28.sp),
+      ),
+    );
+  }
+
+  void _switchRelative(int offset) {
+    final channels = ref.read(channelsProvider);
+    final currentIdx = channels.indexWhere(
+      (c) => c.id == widget.currentChannel.id,
+    );
+    if (currentIdx == -1) return;
+    final targetIdx = (currentIdx + offset).clamp(0, channels.length - 1);
+    if (targetIdx != currentIdx) {
+      widget.onChannelChanged(channels[targetIdx]);
+    }
+  }
+
   Widget _buildTopBar(BuildContext context) {
+    final playerState = ref.read(playerViewModelProvider);
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: EdgeInsets.only(left: 4.w, top: 4.h),
+        padding: EdgeInsets.only(left: 4.w, top: 4.h, right: 4.w),
         child: Row(
           children: [
             IconButton(
@@ -166,6 +257,52 @@ class _VideoControlsState extends ConsumerState<VideoControls>
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            _buildVolumeControl(playerState),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVolumeControl(PlayerState playerState) {
+    return GestureDetector(
+      onTap: () => ref.read(playerViewModelProvider.notifier).toggleMute(),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              playerState.isMuted || playerState.volume == 0
+                  ? Icons.volume_off
+                  : playerState.volume < 0.5
+                      ? Icons.volume_down
+                      : Icons.volume_up,
+              color: Colors.white,
+              size: 22.sp,
+            ),
+            SizedBox(width: 4.w),
+            SizedBox(
+              width: 60.w,
+              child: SliderTheme(
+                data: SliderThemeData(
+                  trackHeight: 3.h,
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                  overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
+                  activeTrackColor: AppColors.primary,
+                  inactiveTrackColor: Colors.white24,
+                  thumbColor: Colors.white,
+                ),
+                child: Slider(
+                  value: playerState.isMuted ? 0 : playerState.volume,
+                  onChanged: (v) {
+                    _hideTimer?.cancel();
+                    ref.read(playerViewModelProvider.notifier).setVolume(v);
+                  },
+                  onChangeEnd: (_) => _startHideTimer(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -176,12 +313,19 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     return Center(
       child: GestureDetector(
         onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
-        child: Container(
-          width: 72.w,
-          height: 72.h,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 80.w,
+          height: 80.h,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.2),
+            color: playerState.isPlaying
+                ? Colors.transparent
+                : Colors.white.withValues(alpha: 0.15),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.3),
+              width: 2,
+            ),
           ),
           child: Icon(
             playerState.isPlaying ? Icons.pause : Icons.play_arrow,
@@ -193,43 +337,108 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     );
   }
 
-  Widget _buildCenterPlayOverlay(PlayerState playerState) {
-    return Center(
-      child: GestureDetector(
-        onTap: () => ref.read(playerViewModelProvider.notifier).togglePlayPause(),
-        child: Container(
-          width: 56.w,
-          height: 56.h,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.15),
+  Widget _buildBottomBar(PlayerState playerState) {
+    if (!playerState.showControls) {
+      return SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 8.h),
+          child: Center(
+            child: Container(
+              width: 32.w,
+              height: 3.h,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
           ),
-          child: Icon(Icons.play_arrow, color: Colors.white, size: 36.sp),
+        ),
+      );
+    }
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 12.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () => _switchRelative(-1),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.skip_previous, color: Colors.white70, size: 18.sp),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'Prev',
+                        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              GestureDetector(
+                onTap: _openChannelSwitcher,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.list, color: AppColors.primaryLight, size: 18.sp),
+                      SizedBox(width: 6.w),
+                      Text(
+                        'Channels',
+                        style: TextStyle(color: AppColors.primaryLight, fontSize: 12.sp),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              GestureDetector(
+                onTap: () => _switchRelative(1),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Next',
+                        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+                      ),
+                      SizedBox(width: 4.w),
+                      Icon(Icons.skip_next, color: Colors.white70, size: 18.sp),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildChannelSwitcherHandle() {
-    return GestureDetector(
-      onVerticalDragEnd: (details) {
-        if (details.primaryVelocity != null && details.primaryVelocity! < -200) {
-          _openChannelSwitcher();
-        }
-      },
-      child: Container(
-        height: 60.h,
-        alignment: Alignment.center,
-        child: Container(
-          width: 32.w,
-          height: 4.h,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(2.r),
-          ),
-        ),
-      ),
-    );
+  void _showSeekFeedback(int seconds) {
   }
 
   void _openChannelSwitcher() {
@@ -242,56 +451,85 @@ class _VideoControlsState extends ConsumerState<VideoControls>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.3,
-          maxChildSize: 0.85,
-          expand: false,
-          builder: (ctx, scrollController) {
-            return Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 16.h),
-              child: Column(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.textMuted,
-                        borderRadius: BorderRadius.circular(2.r),
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          ),
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            minChildSize: 0.3,
+            maxChildSize: 0.85,
+            expand: false,
+            builder: (ctx, scrollController) {
+              return Padding(
+                padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 16.h),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.textMuted,
+                          borderRadius: BorderRadius.circular(2.r),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Switch Channel',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
+                    SizedBox(height: 16.h),
+                    Row(
+                      children: [
+                        Container(
+                          width: 36.w,
+                          height: 36.h,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Icon(
+                            Icons.list,
+                            color: AppColors.primary,
+                            size: 20.sp,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Text(
+                          'Switch Channel',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${channels.length}',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: channels.length,
-                      itemBuilder: (ctx, index) {
-                        final channel = channels[index];
-                        final isCurrent = index == currentIdx;
-                        return _buildChannelItem(channel, isCurrent, index);
-                      },
+                    SizedBox(height: 12.h),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: channels.length,
+                        itemBuilder: (ctx, index) {
+                          final channel = channels[index];
+                          final isCurrent = index == currentIdx;
+                          return _buildChannelItem(channel, isCurrent, index);
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -309,8 +547,10 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         margin: EdgeInsets.symmetric(vertical: 3.h),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color: isCurrent ? AppColors.primary.withValues(alpha: 0.15) : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(10.r),
+          color: isCurrent
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isCurrent ? AppColors.primary : Colors.transparent,
             width: 1,
@@ -319,7 +559,7 @@ class _VideoControlsState extends ConsumerState<VideoControls>
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(6.r),
+              borderRadius: BorderRadius.circular(8.r),
               child: SizedBox(
                 width: 44.w,
                 height: 44.h,
@@ -374,11 +614,11 @@ class _VideoControlsState extends ConsumerState<VideoControls>
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  gradient: AppColors.premiumGradient,
                   borderRadius: BorderRadius.circular(4.r),
                 ),
                 child: Text(
-                  'NOW',
+                  'LIVE',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 9.sp,

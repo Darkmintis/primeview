@@ -6,6 +6,7 @@ import '../../../core/models/channel_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../favorites/viewmodels/favorites_viewmodel.dart';
 import '../../player/view/player_view.dart';
+import '../../../core/utils/html_utils.dart';
 
 class ChannelListItem extends ConsumerWidget {
   final ChannelModel channel;
@@ -30,68 +31,83 @@ class ChannelListItem extends ConsumerWidget {
               ),
             );
           },
-          child: Padding(
-            padding: EdgeInsets.all(12.w),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: SizedBox(
-                    width: 64.w,
-                    height: 64.h,
-                    child: channel.logo != null && channel.logo!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: channel.logo!,
-                            fit: BoxFit.contain,
-                            placeholder: (_, _) => _placeholder(),
-                            errorWidget: (_, _, _) => _placeholder(),
-                          )
-                        : _placeholder(),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.divider, width: 0.5),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(10.w),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: SizedBox(
+                      width: 56.w,
+                      height: 56.h,
+                      child: channel.logo != null && channel.logo!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: channel.logo!,
+                              fit: BoxFit.contain,
+                              placeholder: (_, _) => _placeholder(),
+                              errorWidget: (_, _, _) => _placeholder(),
+                            )
+                          : _placeholder(),
+                    ),
                   ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        channel.name,
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w500,
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          htmlDecode(channel.name),
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 4.h),
-                      Row(
-                        children: [
-                          _buildTag(channel.category ?? 'Uncategorized'),
-                          if (channel.language != null) ...[
-                            SizedBox(width: 8.w),
-                            _buildTag(channel.language!),
+                        SizedBox(height: 4.h),
+                        Row(
+                          children: [
+                            _buildTag(channel.category ?? 'Uncategorized'),
+                            if (channel.language != null) ...[
+                              SizedBox(width: 6.w),
+                              _buildTag(channel.language!),
+                            ],
                           ],
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? AppColors.favorite : AppColors.textMuted,
+                  IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? AppColors.favorite : AppColors.textMuted,
+                      size: 22.sp,
+                    ),
+                    onPressed: () {
+                      ref.read(favoritesProvider.notifier).toggle(channel.id);
+                    },
                   ),
-                  onPressed: () {
-                    ref.read(favoritesProvider.notifier).toggle(channel.id);
-                  },
-                ),
-                Icon(
-                  Icons.play_circle_fill,
-                  color: AppColors.primary,
-                  size: 36.sp,
-                ),
-              ],
+                  Container(
+                    width: 36.w,
+                    height: 36.h,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.premiumGradient,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 22.sp,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -118,11 +134,17 @@ class ChannelListItem extends ConsumerWidget {
 
   Widget _placeholder() {
     return Container(
-      color: AppColors.surfaceLight,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF1F1F3A), Color(0xFF181830)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Icon(
-        Icons.tv,
-        color: AppColors.textMuted,
-        size: 32.sp,
+        Icons.live_tv_rounded,
+        color: AppColors.textMuted.withValues(alpha: 0.3),
+        size: 28.sp,
       ),
     );
   }

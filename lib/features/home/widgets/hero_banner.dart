@@ -136,7 +136,7 @@ class HeroBanner extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        gradient: AppColors.premiumGradient,
         borderRadius: BorderRadius.circular(4.r),
       ),
       child: Text(

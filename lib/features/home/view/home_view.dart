@@ -272,7 +272,8 @@ class _ChannelGridCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColors.divider, width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,13 +281,19 @@ class _ChannelGridCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(10.r),
+                  top: Radius.circular(12.r),
                 ),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     Container(
-                      color: AppColors.surfaceLight,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF1F1F3A), Color(0xFF181830)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
                       child: channel.logo != null && channel.logo!.isNotEmpty
                           ? CachedNetworkImage(
                               imageUrl: channel.logo!,
@@ -301,21 +308,9 @@ class _ChannelGridCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              errorWidget: (_, _, _) => Center(
-                                child: Icon(
-                                  Icons.tv,
-                                  color: AppColors.textMuted,
-                                  size: 32.sp,
-                                ),
-                              ),
+                              errorWidget: (_, _, _) => _placeholderIcon(),
                             )
-                          : Center(
-                              child: Icon(
-                                Icons.tv,
-                                color: AppColors.textMuted,
-                                size: 32.sp,
-                              ),
-                            ),
+                          : _placeholderIcon(),
                     ),
                     if (hasCountry)
                       Positioned(
@@ -327,7 +322,7 @@ class _ChannelGridCard extends StatelessWidget {
                             vertical: 1.h,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black54,
+                            color: AppColors.primary.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
@@ -341,12 +336,31 @@ class _ChannelGridCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                    Positioned(
+                      bottom: 4,
+                      left: 4,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 1.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(3.r),
+                        ),
+                        child: Icon(
+                          Icons.play_circle_fill,
+                          color: AppColors.primaryLight,
+                          size: 14.sp,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(6.w),
+              padding: EdgeInsets.fromLTRB(8.w, 6.h, 8.w, 8.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -354,13 +368,13 @@ class _ChannelGridCard extends StatelessWidget {
                     htmlDecode(channel.name),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 11.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 2.h),
+                  SizedBox(height: 3.h),
                   Row(
                     children: [
                       Expanded(
@@ -368,7 +382,7 @@ class _ChannelGridCard extends StatelessWidget {
                           htmlDecode(channel.category ?? ''),
                           style: TextStyle(
                             color: AppColors.textMuted,
-                            fontSize: 9.sp,
+                            fontSize: 10.sp,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -377,7 +391,7 @@ class _ChannelGridCard extends StatelessWidget {
                       if (hasLanguage)
                         Container(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 3.w,
+                            horizontal: 4.w,
                             vertical: 1.h,
                           ),
                           decoration: BoxDecoration(
@@ -388,7 +402,7 @@ class _ChannelGridCard extends StatelessWidget {
                             channel.language!,
                             style: TextStyle(
                               color: AppColors.textSecondary,
-                              fontSize: 7.sp,
+                              fontSize: 8.sp,
                             ),
                           ),
                         ),
@@ -399,6 +413,16 @@ class _ChannelGridCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _placeholderIcon() {
+    return Center(
+      child: Icon(
+        Icons.live_tv_rounded,
+        color: AppColors.textMuted.withValues(alpha: 0.3),
+        size: 36.sp,
       ),
     );
   }

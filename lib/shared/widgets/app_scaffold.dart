@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../features/home/view/home_view.dart';
 import '../../features/search/view/search_view.dart';
 import '../../features/favorites/view/favorites_view.dart';
+import '../../features/settings/view/settings_view.dart';
 
 class AppScaffold extends ConsumerWidget {
   const AppScaffold({super.key});
@@ -14,15 +15,18 @@ class AppScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentTabProvider);
 
-    final screens = [
-      HomeView(onSearchTap: () => ref.read(currentTabProvider.notifier).state = 1),
+    final screens = <Widget>[
+      HomeView(
+        onSearchTap: () => ref.read(currentTabProvider.notifier).state = TabIndex.search,
+      ),
       const SearchView(),
       const FavoritesView(),
+      const SettingsView(),
     ];
 
     return Scaffold(
       body: IndexedStack(
-        index: currentIndex,
+        index: currentIndex.index,
         children: screens,
       ),
       bottomNavigationBar: Container(
@@ -32,8 +36,8 @@ class AppScaffold extends ConsumerWidget {
           ),
         ),
         child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) => ref.read(currentTabProvider.notifier).state = index,
+          currentIndex: currentIndex.index,
+          onTap: (index) => ref.read(currentTabProvider.notifier).state = TabIndex.values[index],
           backgroundColor: AppColors.surface,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textMuted,
@@ -55,6 +59,11 @@ class AppScaffold extends ConsumerWidget {
               icon: Icon(Icons.favorite_outline),
               activeIcon: Icon(Icons.favorite),
               label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings),
+              label: 'Settings',
             ),
           ],
         ),
