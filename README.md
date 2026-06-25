@@ -1,6 +1,6 @@
 # PrimeView
 
-IPTV streaming app built with Flutter. Dark-themed, Netflix-style UI for watching live TV channels from M3U playlists.
+IPTV streaming app built with Flutter. Dark-themed UI for watching live TV channels from M3U playlists.
 
 ## Features
 
